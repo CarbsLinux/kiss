@@ -1,0 +1,66 @@
+# -*- mode: redo -*-
+# See LICENSE for copyright information
+
+setv() {
+    # Set variables if unset. Works similar to the Makefile syntax.
+    [ "$3" ] || {
+        printf '%s\n' "Faulty variable syntax" >&2
+        exit 1
+    }
+    var=$1; sym=$2; shift 2
+    case "$sym" in
+        \?=|=) eval "[ \"\$$var\" ]" || export "$var=$*" ;;
+        +=)    eval "export \"$var=\$$var $*\""
+    esac
+}
+
+redo_clean() {
+    # Clean function for various redo implementations
+    [ -r .do_built ] && {
+        while read -r file; do
+            [ -d "$file" ] || rm -f "$file"
+        done < .do_built
+    }
+    find . -type f \( -name '*.tmp' -o -name '*.did' -o -name '.dep*' -o -name '.target*' \) \
+         -exec rm -f -- {} +
+    [ "$DO_BUILT" ]  || find . -name '.do_built*' -exec rm -rf -- {} +
+    [ "$REDO_BASE" ] || rm -rf -- .redo
+}
+
+PHONY() {
+    # Function that resembles the .PHONY: target on the classic 'make' build
+    # system.
+    [ "$1" ] || {
+        trap 'rm -f $3' EXIT INT
+        return 0
+    }
+    setv PHONY += "$@"
+    trap 'case " $PHONY " in *" $1 "*) rm -f $3; esac' EXIT INT
+}
+
+setv VERSION = 5.1.0
+
+# Paths
+setv PREFIX    = /usr/local
+setv BINDIR    = "${PREFIX}/bin"
+setv SHAREDIR  = "${PREFIX}/share"
+setv DOCDIR    = "${SHAREDIR}/doc"
+setv CPTDOC    = "${DOCDIR}/cpt"
+setv MANPREFIX = "${SHAREDIR}/man"
+setv MAN1      = "${MANPREFIX}/man1"
+
+# Flags
+setv CFLAGS = -std=c99 -Wpedantic -Wall -Os
+setv CFLAGS += -D_XOPEN_SOURCE=700
+setv LDFLAGS = -s -static
+setv LIBS    = -lc
+
+setv CC = cc
+setv LD = "${CC}"
+
+# Documentation tools
+setv EMACS    = emacs
+setv MAKEINFO = makeinfo
+
+# Phony targets
+PHONY all dist clean install uninstall test
