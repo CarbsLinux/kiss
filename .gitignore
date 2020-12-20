@@ -24,3 +24,6 @@ getopt
 *.did
 .dep*
 .target*
+
+### Texinfo ###
+*.info
