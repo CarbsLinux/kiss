@@ -11,10 +11,12 @@ case "$1" in
         $MAKEINFO "$fn.texi" -o "$3"
         ;;
     *.texi)
-        [ -f "$fn.org" ] || exit 99
+        [ -f "$fn.org" ] || exit 0
         redo-ifchange "$fn.org"
-        $EMACS "$fn.org" --batch -f org-texinfo-export-to-texinfo
-        mv "$1" "$3"
+        cp "$fn.org" "$3.org"
+        $EMACS "$3.org" --batch -f org-texinfo-export-to-texinfo
+        rm -f "$3.org"
+        mv "$3.texi" "$3"
         ;;
     *)
         echo "Unknown target $1"
