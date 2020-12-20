@@ -8,7 +8,7 @@
 # Currently maintained by Cem Keylan.
 
 version() {
-    log "Carbs Packaging Tools" 5.1.0
+    log "Carbs Packaging Tools" 5.1.1
     exit 0
 }
 
@@ -1746,7 +1746,7 @@ pkg_updates(){
 pkg_clean() {
     # Clean up on exit or error. This removes everything related
     # to the build.
-    [ "$CPT_DEBUG" != 1 ] || return
+    [ "$CPT_DEBUG" != 1 ] || return 0
 
     # Block 'Ctrl+C' while cache is being cleaned.
     trap_set block
