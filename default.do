@@ -42,10 +42,9 @@ case "$1" in
         ;;
     src/clean)
         rm -f src/cpt-lib
+        PHONY
         ;;
     *)
         echo "Unknown target $1"
         exit 99
 esac
-
-PHONY all dist test clean src/clean
