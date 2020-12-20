@@ -9,6 +9,14 @@ this project _somewhat_ adheres to [Semantic Versioning].
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
 
+5.1.1 - 2020-12-20
+--------------------------------------------------------------------------------
+
+### Fixed
+- Fixed an issue where the package build is continued even when it failed when
+  `$CPT_DEBUG` was set
+
+
 5.1.0 - 2020-11-25
 --------------------------------------------------------------------------------
 
@@ -28,6 +36,7 @@ this project _somewhat_ adheres to [Semantic Versioning].
 ### Fixed
 - Moved option parsing to cpt-lib if `parser_definition` exists. This shouldn't
   affect existing scripts where `cpt-lib` is called before the `p
+
 
 5.0.0 - 2020-10-06
 --------------------------------------------------------------------------------
