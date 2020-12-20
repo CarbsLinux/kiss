@@ -19,25 +19,24 @@ Dependencies
 
 To build and use cpt, you need the following software.
 
-- C compiler [make]
+MAKE DEPENDS
+- C compiler
+- redo (the repository contains minimal/do)
+
+RUNTIME DEPENDS
 - rsync
 - curl
-- getopt [provided by cpt if not available]
 - POSIX base utilities [coreutils, busybox, sbase, etc.]
 - tar [GNU tar, busybox, toybox, libarchive, etc.]
-
-Build configuration can be done from the 'config.mk' file. If you have getopt
-on your system, add SYSTEM_GETOPT=1 option to your 'config.mk'.
 
 
 Directory Structure
 --------------------------------------------------------------------------------
 
-    /         -- cpt, README, Makefile, LICENSE, CHANGELOG
+    /         -- README, LICENSE, CHANGELOG
     bin/      -- for C programs.
     contrib/  -- for Shell scripts that wrap around cpt.
-    doc/      -- for documentation.
-    getopt-ul -- for cpt provided util-linux standalone getopt(1).
+    docs/     -- for documentation.
     man/      -- for manual pages.
     src/      -- for the tools that make up the package manager.
 
