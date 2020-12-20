@@ -25,9 +25,11 @@ case "$1" in
     "cpt-$VERSION.tar.xz")
         redo docs/cpt.info
         rm -rf -- "cpt-$VERSION"
-        find . -type f ! -name '.*' ! -path './.*' |
+        mkdir -p "cpt-$VERSION"
+        { git ls-tree -r HEAD --name-only && echo docs/cpt.info ;} |
             while read -r file; do
-                mkdir -p "cpt-$VERSION/${file%/*}"
+                [ "${file##*/*}" ] ||
+                    mkdir -p "cpt-$VERSION/${file%/*}"
                 cp "$file" "cpt-$VERSION/$file"
             done
         tar cf "cpt-$VERSION.tar" "cpt-$VERSION"

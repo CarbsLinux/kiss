@@ -14,6 +14,31 @@ setv() {
     esac
 }
 
+setv VERSION = 5.1.1
+
+# Paths
+setv PREFIX    = /usr/local
+setv BINDIR    = "${PREFIX}/bin"
+setv SHAREDIR  = "${PREFIX}/share"
+setv DOCDIR    = "${SHAREDIR}/doc"
+setv CPTDOC    = "${DOCDIR}/cpt"
+setv MANPREFIX = "${SHAREDIR}/man"
+setv MAN1      = "${MANPREFIX}/man1"
+
+# Flags
+setv CFLAGS = -std=c99 -Wpedantic -Wall -Os
+setv CFLAGS += -D_XOPEN_SOURCE=700
+setv LDFLAGS = -s -static
+setv LIBS    = -lc
+
+setv CC = cc
+setv LD = "${CC}"
+
+# Documentation tools
+setv EMACS    = emacs
+setv MAKEINFO = makeinfo
+
+# Helper functions
 redo_clean() {
     # Clean function for various redo implementations
     [ -r .do_built ] && {
@@ -38,29 +63,11 @@ PHONY() {
     trap 'case " $PHONY " in *" $1 "*) rm -f $3; esac' EXIT INT
 }
 
-setv VERSION = 5.1.1
+getbin() {
+    # Function to get all executables
+    find src contrib bin -name 'cpt-*' ! -name '*.in' ! -name '*.[coh]'
+}
 
-# Paths
-setv PREFIX    = /usr/local
-setv BINDIR    = "${PREFIX}/bin"
-setv SHAREDIR  = "${PREFIX}/share"
-setv DOCDIR    = "${SHAREDIR}/doc"
-setv CPTDOC    = "${DOCDIR}/cpt"
-setv MANPREFIX = "${SHAREDIR}/man"
-setv MAN1      = "${MANPREFIX}/man1"
-
-# Flags
-setv CFLAGS = -std=c99 -Wpedantic -Wall -Os
-setv CFLAGS += -D_XOPEN_SOURCE=700
-setv LDFLAGS = -s -static
-setv LIBS    = -lc
-
-setv CC = cc
-setv LD = "${CC}"
-
-# Documentation tools
-setv EMACS    = emacs
-setv MAKEINFO = makeinfo
 
 # Phony targets
 PHONY all dist clean install uninstall test
