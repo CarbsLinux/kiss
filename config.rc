@@ -38,7 +38,7 @@ PHONY() {
     trap 'case " $PHONY " in *" $1 "*) rm -f $3; esac' EXIT INT
 }
 
-setv VERSION = 5.1.0
+setv VERSION = 5.1.1
 
 # Paths
 setv PREFIX    = /usr/local

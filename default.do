@@ -4,6 +4,15 @@
 fn="${1%.*}"
 
 case "$1" in
+    all) redo-ifchange src/cpt-lib bin/all docs/cpt.info ;;
+    dist)
+        redo clean
+        redo "cpt-$VERSION.tar.xz"
+        ;;
+    src/cpt-lib)
+        redo-ifchange "$1.in"
+        sed "s|@VERSION@|$VERSION|g" < "$1.in" > "$3"
+        ;;
     bin/cpt-readlink|bin/cpt-stat)
         redo-ifchange "$1.o"
         "$CC" -o "$3" $LDFLAGS "$1.o" $LIBS
@@ -13,18 +22,8 @@ case "$1" in
         redo-ifchange "$fn.c"
         "$CC" -c -o "$3" $CFLAGS "$fn.c"
         ;;
-    *.info)
-        redo-ifchange "$fn.texi"
-        $MAKEINFO "$fn.texi" -o "$3"
-        ;;
-    *.texi)
-        [ -f "$fn.org" ] || exit 99
-        redo-ifchange "$fn.org"
-        $EMACS "$fn.org" --batch -f org-texinfo-export-to-texinfo
-        mv "$1" "$3"
-        ;;
     "cpt-$VERSION.tar.xz")
-        redo doc/cpt.info
+        redo docs/cpt.info
         rm -rf -- "cpt-$VERSION"
         find . -type f ! -name '.*' ! -path './.*' |
             while read -r file; do
@@ -36,7 +35,15 @@ case "$1" in
         rm -rf -- "cpt-$VERSION"
         mv "$1" "$3"
         ;;
+    test)
+        redo src/test
+        ;;
+    src/clean)
+        rm -f src/cpt-lib
+        ;;
     *)
         echo "Unknown target $1"
         exit 99
 esac
+
+PHONY all dist test clean src/clean
