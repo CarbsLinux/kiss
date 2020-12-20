@@ -1,4 +1,5 @@
 # See LICENSE for copyright information
+VERSION = 5.1.0
 
 # Paths
 PREFIX    = /usr/local
@@ -18,3 +19,7 @@ LIBS    = -lc
 # C compiler and linker
 CC = cc
 LD = ${CC}
+
+# Documentation tools
+EMACS = emacs
+MAKEINFO = makeinfo
