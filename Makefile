@@ -5,6 +5,15 @@ SRC = bin/cpt-readlink.c bin/cpt-stat.c
 OBJ = ${SRC:.c=.o}
 BIN = ${SRC:.c=}
 
+.SUFFIXES:
+.SUFFIXES: .o .c .org .texi .info
+
+.org.texi:
+	${EMACS} $< --batch -f org-texinfo-export-to-texinfo
+
+.texi.info:
+	${MAKEINFO} $< -o $@
+
 all: ${BIN}
 
 .c:
