@@ -1,4 +1,5 @@
 . ../config.rc
 redo-ifchange cpt-lib
-shellcheck -x -f gcc ./cpt* ../contrib/*
+exec >&2
+find . ../contrib -name 'cpt-*' ! -name '*.*' -exec shellcheck -x -f gcc {} +
 PHONY
