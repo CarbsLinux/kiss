@@ -38,7 +38,7 @@ case "$1" in
         mv "$1" "$3"
         ;;
     test)
-        redo src/test
+        redo src/test bin/test
         ;;
     src/clean)
         rm -f src/cpt-lib
