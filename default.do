@@ -4,7 +4,7 @@
 fn="${1%.*}"
 
 case "$1" in
-    all) redo-ifchange src/cpt-lib bin/all docs/cpt.info ;;
+    all) redo-ifchange src/cpt-lib bin/all docs/all ;;
     dist)
         redo clean
         redo "cpt-$VERSION.tar.xz"
