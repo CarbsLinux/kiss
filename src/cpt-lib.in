@@ -1765,7 +1765,9 @@ create_cache() {
     # which point to them.
     mkdir -p "${tmp_dir:=${CPT_TMPDIR:=$cac_dir/proc}/$pid}"
 
-    # If an argument is given, skip the creation of other cache directories
+    # If an argument is given, skip the creation of other cache directories.
+    # This here makes shellcheck extremely angry, so I am globally disabling
+    # SC2119.
     [ "$1" ] || mkdir -p "${mak_dir:=$tmp_dir/build}" \
                          "${pkg_dir:=$tmp_dir/pkg}" \
                          "${tar_dir:=$tmp_dir/export}"
