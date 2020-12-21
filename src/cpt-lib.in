@@ -1,4 +1,5 @@
 #!/bin/sh -ef
+# @DOCSTRING@
 # shellcheck source=/dev/null
 #
 # This is the Carbs Packaging Toolchain written for Carbs Linux.
@@ -1912,3 +1913,15 @@ create_cache() {
     fi
 
 }
+
+# If the library is being called with its own name, run arguments.
+if [ "${0##*/}" = cpt-lib ]; then
+    pd() {
+        setup REST help:usage -- "usage: ${0##*/} [funcall...]"
+        global_options
+    }
+    eval "$(getoptions pd parse "$0")"
+    parse "$@"
+    eval set -- "$REST"
+    "$@"
+fi

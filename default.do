@@ -1,8 +1,5 @@
 . ./config.rc
 
-# Extensionless name of file
-fn="${1%.*}"
-
 case "$1" in
     all) redo-ifchange src/cpt-lib docs/all ;;
     dist)
@@ -11,7 +8,9 @@ case "$1" in
         ;;
     src/cpt-lib)
         redo-ifchange "$1.in"
-        sed "s|@VERSION@|$VERSION|g" < "$1.in" > "$3"
+        sed -e "s|@VERSION@|$VERSION|g" \
+            -e "s|@DOCSTRING@|Call functions from the library|g" < "$1.in" > "$3"
+        chmod +x "$3"
         ;;
     "cpt-$VERSION.tar.xz")
         redo docs/cpt.info

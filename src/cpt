@@ -16,9 +16,6 @@ case "$arg" in
         done
 
         for path; do
-            # Ignore the library.
-            [ lib = "$path" ] && continue
-
             printf "%b->%b %-${max}s  " "$colorb" "$colre" "${path#*/cpt-}"
             sed -n 's/^# *//;2p' "$(command -v "cpt-$path")"
         done | sort -uk1 >&2
