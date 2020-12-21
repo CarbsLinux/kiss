@@ -1,7 +1,7 @@
 ### Binaries/Objects ###
+cpt-lib
 cpt-stat
 cpt-readlink
-getopt
 *.o
 
 ### Emacs ###
@@ -15,6 +15,15 @@ getopt
 [._]s[a-rt-v][a-z]
 [._]ss[a-gi-z]
 [._]sw[a-p]
+
+### Redo files
+/.redo
+/.do_built
+/.do_built.dir
+*.tmp
+*.did
+.dep*
+.target*
 
 ### Texinfo ###
 *.info
