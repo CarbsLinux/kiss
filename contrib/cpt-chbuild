@@ -18,7 +18,6 @@ die() {
 
 case "$(uname -m)" in i*86) arch=i686; esac
 url="https://dl.carbslinux.org/releases/${arch:-$(uname -m)}/carbs-rootfs.tar.xz"
-pid=$$
 
 cd "$cac_dir"
 
@@ -44,20 +43,22 @@ sh256 carbs-rootfs.tar.xz | diff - carbs-rootfs.tar.xz.sum ||
     ( cd carbs-chroot; tar xf ../carbs-rootfs.tar.xz )
 }
 
+create_cache empty
+
 log "Creating temporary chroot"
-cp -a carbs-chroot "chroot-$pid"
+cp -a carbs-chroot "${chr_dir:=$tmp_dir/chroot}"
 
 [ "$1" ] && {
     log "Installing extra packages"
-    CPT_ROOT=$PWD/chroot-$pid cpt-install "$@"
+    CPT_ROOT=$chr_dir cpt-install "$@"
 }
 
-run_hook pre-chroot "" "$PWD/chroot-$pid"
+run_hook pre-chroot "" "$chr_dir"
 
 log "Entering chroot"
 if [ "$(id -u)" -eq 0 ]; then
-    cpt-chroot "chroot-$pid"
-    rm -rf "chroot-$pid"
+    cpt-chroot "$chr_dir"
+    rm -rf "$chr_dir"
 else
-    as_root sh -c "cpt-chroot chroot-$pid; rm -rf chroot-$pid"
+    as_root sh -c "cpt-chroot $chr_dir; rm -rf $chr_dir"
 fi
