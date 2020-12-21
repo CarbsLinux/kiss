@@ -4,8 +4,9 @@
 fn="${1%.*}"
 
 case "$1" in
-    all)  redo-ifchange info ;;
-    info) redo-ifchange cpt.info ;;
+    all)  redo info ;;
+    allclean) redo ../clean; rm -f cpt.texi ;;
+    info) redo-ifchange cpt.info cpt.texi cpt.org ;;
     *.info)
         redo-ifchange "$fn.texi"
         $MAKEINFO "$fn.texi" -o "$3"
