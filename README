@@ -19,22 +19,20 @@ Dependencies
 
 To build and use cpt, you need the following software.
 
-MAKE DEPENDS
-- C compiler
-- redo (the repository contains minimal/do)
-
 RUNTIME DEPENDS
 - rsync
 - curl
 - POSIX base utilities [coreutils, busybox, sbase, etc.]
 - tar [GNU tar, busybox, toybox, libarchive, etc.]
 
+MAKE DEPENDS
+- redo (optional, the repository contains minimal/do)
+
 
 Directory Structure
 --------------------------------------------------------------------------------
 
     /         -- README, LICENSE, CHANGELOG
-    bin/      -- for C programs.
     contrib/  -- for Shell scripts that wrap around cpt.
     docs/     -- for documentation.
     man/      -- for manual pages.

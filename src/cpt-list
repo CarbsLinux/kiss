@@ -5,11 +5,23 @@ parser_definition() {
     setup REST help:usage -- "usage: ${0##*/} [-c] [pkg...]"
     msg -- '' 'Options:'
     flag CURRENT -c --current -- "Use the current directory as a package"
+    param PKG --check label:"    --check PKG TRUE FALSE" -- \
+          "Check if PKG exists and return the string of TRUE if"\
+          "it exists, and the string of FALSE if it doesn't." \
+          "Useful for optional packaging."
     global_options
 }
 
 if [ -f ./cpt-lib ]; then . ./cpt-lib; else . cpt-lib; fi
 
+if [ "$PKG" ]; then
+    if pkg_list "$PKG" >/dev/null 2>&1; then
+        printf %s "$1"
+    else
+        printf %s "$2"
+    fi
+else
 [ "$CURRENT" ] && set -- "${PWD##*/}"
 
 pkg_list "$@"
+fi

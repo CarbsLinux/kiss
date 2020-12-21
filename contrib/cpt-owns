@@ -1,5 +1,6 @@
 #!/bin/sh -e
 # Check which package owns a file
+. cpt-lib
 
 case "$1" in ''|--help|-h) printf '%s\n' "usage: ${0##*/} [file]" ; exit 0 ; esac
 
@@ -17,7 +18,7 @@ esac
 # Strip 'CPT_ROOT' from the file path if passed and
 # follow symlinks.
 file="${1#$CPT_ROOT}"
-dirname=$(cpt-readlink "$CPT_ROOT/${file%/*}")
+dirname=$(_readlinkf "$CPT_ROOT/${file%/*}")
 file="$dirname/${file##*/}"
 
 # Check if the file exists and exit if it is not.

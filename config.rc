@@ -76,7 +76,7 @@ PHONY() {
 
 getbin() {
     # Function to get all executables
-    find src contrib bin -name 'cpt-*' ! -name '*.in' ! -name '*.[coh]'
+    find src contrib -name 'cpt-*' ! -name '*.in'
 }
 
 

@@ -16,8 +16,8 @@ case "$arg" in
         done
 
         for path; do
-            # These are the files to be ignored.
-            contains "lib readlink stat" "$path" && continue
+            # Ignore the library.
+            [ lib = "$path" ] && continue
 
             printf "%b->%b %-${max}s  " "$colorb" "$colre" "${path#*/cpt-}"
             sed -n 's/^# *//;2p' "$(command -v "cpt-$path")"

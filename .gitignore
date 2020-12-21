@@ -1,9 +1,3 @@
-### Binaries/Objects ###
-cpt-lib
-cpt-stat
-cpt-readlink
-*.o
-
 ### Emacs ###
 \#*\#
 *~

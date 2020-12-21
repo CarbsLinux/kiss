@@ -4,7 +4,7 @@
 fn="${1%.*}"
 
 case "$1" in
-    all) redo-ifchange src/cpt-lib bin/all docs/all ;;
+    all) redo-ifchange src/cpt-lib docs/all ;;
     dist)
         redo clean
         redo "cpt-$VERSION.tar.xz"
@@ -12,15 +12,6 @@ case "$1" in
     src/cpt-lib)
         redo-ifchange "$1.in"
         sed "s|@VERSION@|$VERSION|g" < "$1.in" > "$3"
-        ;;
-    bin/cpt-readlink|bin/cpt-stat)
-        redo-ifchange "$1.o"
-        "$CC" -o "$3" $LDFLAGS "$1.o" $LIBS
-        ;;
-    *.o)
-        [ -f "${1%.o}.c" ] || exit 99
-        redo-ifchange "$fn.c"
-        "$CC" -c -o "$3" $CFLAGS "$fn.c"
         ;;
     "cpt-$VERSION.tar.xz")
         redo docs/cpt.info
@@ -38,7 +29,7 @@ case "$1" in
         mv "$1" "$3"
         ;;
     test)
-        redo src/test bin/test
+        redo src/test
         ;;
     src/clean)
         rm -f src/cpt-lib

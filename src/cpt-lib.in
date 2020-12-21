@@ -44,6 +44,48 @@ trap_set() {
     esac
 }
 
+_stat() (
+    _user=; eval set -- "$(ls -ld "$1")"
+    id -u "${_user:=$3}" >/dev/null 2>&1 || _user=root
+    printf '%s' "$_user"
+)
+
+_readlinkf() (
+    # Public domain POSIX sh readlink function by Koichi Nakashima
+    [ "${1:-}" ] || return 1
+    max_symlinks=40
+    CDPATH='' # to avoid changing to an unexpected directory
+
+    target=$1
+    [ -e "${target%/}" ] || target=${1%"${1##*[!/]}"} # trim trailing slashes
+    [ -d "${target:-/}" ] && target="$target/"
+
+    cd -P . 2>/dev/null || return 1
+    while [ "$max_symlinks" -ge 0 ] && max_symlinks=$((max_symlinks - 1)); do
+        if [ ! "$target" = "${target%/*}" ]; then
+            case $target in
+                /*) cd -P "${target%/*}/" 2>/dev/null || break ;;
+                *) cd -P "./${target%/*}" 2>/dev/null || break ;;
+            esac
+            target=${target##*/}
+        fi
+
+        if [ ! -L "$target" ]; then
+            target="${PWD%/}${target:+/}${target}"
+            printf '%s\n' "${target:-/}"
+            return 0
+        fi
+
+        # `ls -dl` format: "%s %u %s %s %u %s %s -> %s\n",
+        #   <file mode>, <number of links>, <owner name>, <group name>,
+        #   <size>, <date and time>, <pathname of link>, <contents of link>
+        # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/ls.html
+        link=$(ls -dl -- "$target" 2>/dev/null) || break
+        target=${link#*" $target -> "}
+    done
+    return 1
+)
+
 # This is the public domain getoptions shell library. It also forms a usage
 # function.
 # URL: https://github.com/ko1nksm/getoptions (v2.0.1)
@@ -1145,14 +1187,11 @@ pkg_conflicts() {
         # Use $CPT_ROOT in filename so that we follow its symlinks.
         file=$CPT_ROOT/${file#/}
 
-        # We will only follow the symlinks of the directories, so we
-        # reserve the directory name in this 'dirname' value. cpt-readlink
-        # functions in a similar fashion to 'readlink -f', it makes sure
-        # every component except for the first one to be available on
-        # the directory structure. If we cannot find it in the system,
-        # we don't need to make this much more complex by trying so
-        # hard to find it. Simply use the original directory name.
-        dirname="$(cpt-readlink "${file%/*}" 2>/dev/null)" ||
+        # We will only follow the symlinks of the directories, so we reserve the
+        # directory name in this 'dirname' value. If we cannot find it in the
+        # system, we don't need to make this much more complex by trying so hard
+        # to find it. Simply use the original directory name.
+        dirname="$(_readlinkf "${file%/*}" 2>/dev/null)" ||
             dirname="${file%/*}"
 
 
@@ -1577,8 +1616,7 @@ pkg_fetch() {
                     # ownership of files and directories in the rare
                     # case that the repository is owned by a 3rd user.
                     (
-                        user=$(cpt-stat "$PWD")       || user=root
-                        id -u "$user" >/dev/null 2>&1 || user=root
+                        user=$(_stat "$PWD")
 
                         [ "$user" = root ] ||
                             log "Dropping permissions to $user for pull"
@@ -1614,8 +1652,7 @@ pkg_fetch() {
                     # We are going to do the same operation as above, to
                     # find the owner of the repository.
                     (
-                        user=$(cpt-stat "$PWD")       || user=root
-                        id -u "$user" >/dev/null 2>&1 || user=root
+                        user=$(_stat "$PWD")
 
                         [ "$user" = root ] ||
                             log "Dropping permissions to $user for pull"
@@ -1647,8 +1684,7 @@ pkg_fetch() {
                     # Similar to the git update, we find the owner of
                     # the repository and spawn rsync as that user.
                     (
-                        user=$(cpt-stat "$PWD")      || user=root
-                        id -u "$user" >/dev/null 2>&1 || user=root
+                        user=$(_stat "$PWD")
 
                         [ "$user" = root ] ||
                             log "Dropping permissions to $user for pull"
