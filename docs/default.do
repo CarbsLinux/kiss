@@ -8,6 +8,11 @@ case "$1" in
     allclean) redo ../clean; rm -f cpt.texi ;;
     info) redo-ifchange cpt.info cpt.texi cpt.org ;;
     *.info)
+        # Don't bother if makeinfo doesn't exist on the system, exit with success.
+        if ! command -v $MAKEINFO; then
+            PHONY
+            exit 0
+        fi
         redo-ifchange "$fn.texi"
         $MAKEINFO "$fn.texi" -o "$3"
         ;;

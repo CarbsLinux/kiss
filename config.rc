@@ -22,6 +22,7 @@ setv BINDIR    = "${PREFIX}/bin"
 setv SHAREDIR  = "${PREFIX}/share"
 setv DOCDIR    = "${SHAREDIR}/doc"
 setv CPTDOC    = "${DOCDIR}/cpt"
+setv INFODIR   = "${SHAREDIR}/info"
 setv MANPREFIX = "${SHAREDIR}/man"
 setv MAN1      = "${MANPREFIX}/man1"
 

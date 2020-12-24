@@ -14,3 +14,12 @@ for man in man/*.1; do
     cp "$man" "${DESTDIR}${MAN1}/${man##*/}"
     chmod 644 "${DESTDIR}${MAN1}/${man##*/}"
 done
+
+# Install the documentation info page.
+# We don't want to bother if the info page wasn't created, just exit without an
+# error.
+[ -f docs/cpt.info ] || exit 0
+
+mkdir -p "${DESTDIR}${INFODIR}"
+cp docs/cpt.info "${DESTDIR}${INFODIR}/cpt.info"
+chmod 644 "${DESTDIR}${INFODIR}/cpt.info"
