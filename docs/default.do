@@ -1,3 +1,4 @@
+SRC_ROOT=..
 . ../config.rc
 
 # Extensionless name of file

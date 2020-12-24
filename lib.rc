@@ -1,0 +1,60 @@
+# -*- mode: redo -*-
+# Helper functions
+target=$1 basename=$2 dest=$3
+
+# Make all targets dependent on the library and the config file
+redo-ifchange "$SRC_ROOT/lib.rc" "$SRC_ROOT/config.rc"
+
+setv() {
+    # Set variables if unset. Works similar to the Makefile syntax.
+    [ "$3" ] || {
+        printf '%s\n' "Faulty variable syntax" >&2
+        exit 1
+    }
+    var=$1; sym=$2; shift 2
+    case "$sym" in
+        \?=|=) eval "[ \"\$$var\" ]" || export "$var=$*" ;;
+        +=)    eval "export \"$var=\$$var $*\""
+    esac
+}
+
+redo_clean() {
+    # Clean function for various redo implementations
+    [ -r .do_built ] && {
+        while read -r file; do
+            [ -d "$file" ] || rm -f "$file"
+        done < .do_built
+    }
+    find . -type f \( -name '*.tmp' -o -name '*.did' -o -name '.dep*' -o -name '.target*' \) \
+         -exec rm -f -- {} +
+    [ "$DO_BUILT" ]  || find . -name '.do_built*' -exec rm -rf -- {} +
+    [ "$REDO_BASE" ] || rm -rf -- .redo
+}
+
+targcheck() {
+    # Usage: targcheck [target...]
+    #
+    # Check if current target is one of the given arguments of this function.
+    # Returns 0 if target is one of the arguments, returns 1 if not.
+    case " $* " in *" $target "*) return 0; esac; return 1
+}
+
+PHONY() {
+    # Usage: PHONY [[target...]]
+    #
+    # Function that resembles the .PHONY: target on the classic 'make' system.
+    # You can either use it without an argument on a single target, or specify
+    # multiple targets.
+    if [ -z "$1" ] || targcheck "$@"; then
+        # shellcheck disable=2064
+        trap "rm -f $dest" EXIT INT
+    fi
+}
+
+getbin() {
+    # Function to get all executables
+    find src contrib -name 'cpt-*' ! -name '*.in'
+}
+
+# Phony targets
+PHONY all dist clean install uninstall test
