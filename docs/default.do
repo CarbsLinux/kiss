@@ -10,7 +10,7 @@ case "$1" in
     info) redo-ifchange cpt.info cpt.texi cpt.org ;;
     *.info)
         # Don't bother if makeinfo doesn't exist on the system, exit with success.
-        if ! command -v $MAKEINFO; then
+        if ! command -v $MAKEINFO >/dev/null; then
             PHONY
             exit 0
         fi
