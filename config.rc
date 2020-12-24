@@ -17,15 +17,6 @@ setv INFODIR   = "${SHAREDIR}/info"
 setv MANPREFIX = "${SHAREDIR}/man"
 setv MAN1      = "${MANPREFIX}/man1"
 
-# Flags
-setv CFLAGS = -std=c99 -Wpedantic -Wall -Os
-setv CFLAGS += -D_XOPEN_SOURCE=700
-setv LDFLAGS = -s -static
-setv LIBS    = -lc
-
-setv CC = cc
-setv LD = "${CC}"
-
 # Documentation tools
 setv EMACS    = emacs
 setv MAKEINFO = makeinfo
