@@ -1062,6 +1062,11 @@ pkg_build() {
         diff -U 3 "$pkg_build" .build.cpt > "$pkg_build.diff" &&
             rm -f "$pkg_build.diff"
 
+        # We don't want the package manager to track 'dir' pages of the info
+        # directory. We don't want every single package to create their own dir
+        # files either.
+        rm -f "$pkg_dir/$pkg/usr/share/info/dir"
+
         # We never ever want this. Let's end the endless conflicts
         # and remove it.
         find "$pkg_dir/$pkg" -name charset.alias -exec rm -f {} +
