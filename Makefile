@@ -33,23 +33,23 @@ install-bin: ${BIN}
 		install -Dm755 $${bin} ${DESTDIR}${BINDIR}/$${bin##*/}; done
 
 install-src:
-	for bin in src/*; do \
+	for bin in src/cpt-*; do \
 		install -Dm755 $${bin} ${DESTDIR}${BINDIR}/$${bin##*/}; done
 
 install-contrib:
-	for bin in contrib/*; do \
+	for bin in contrib/cpt-*; do \
 		install -Dm755 $${bin} ${DESTDIR}${BINDIR}/$${bin##*/}; done
 
 install-contrib-static:
 	mkdir -p ${DESTDIR}${BINDIR}
-	for bin in contrib/*; do \
+	for bin in contrib/cpt-*; do \
 		sed '/\. cpt-lib/r src/cpt-lib' $${bin} | \
 		sed '/\. cpt-lib/d' > ${DESTDIR}${BINDIR}/$${bin##*/}; \
 		chmod 755 ${DESTDIR}${BINDIR}/$${bin##*/}; done
 
 install-src-static:
 	mkdir -p ${DESTDIR}${BINDIR}
-	for bin in src/*; do \
+	for bin in src/cpt-*; do \
 		sed '/\. cpt-lib/r src/cpt-lib' $${bin} | \
 		sed '/\. cpt-lib/d' > ${DESTDIR}${BINDIR}/$${bin##*/}; \
 		chmod 755 ${DESTDIR}${BINDIR}/$${bin##*/}; done
@@ -61,7 +61,7 @@ install:        install-bin install-src        install-contrib        install-do
 install-static: install-bin install-src-static install-contrib-static install-doc
 
 uninstall:
-	for bin in ${BIN} src/* contrib/*; do \
+	for bin in ${BIN} src/cpt-* contrib/cpt-*; do \
 		rm -f ${DESTDIR}${BINDIR}/$${bin##*/}; done
 	for man in man/*; do rm -f ${DESTDIR}${MAN1}/$${man##*/}; done
 
