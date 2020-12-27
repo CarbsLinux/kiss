@@ -17,7 +17,8 @@ case "$arg" in
 
         for path; do
             printf "%b->%b %-${max}s  " "$colorb" "$colre" "${path#*/cpt-}"
-            sed -n 's/^# *//;2p' "$(command -v "cpt-$path")"
+            awk 'NR==2{if(/^# /){sub(/^# */,"");print}else print "";exit}' \
+                "$(command -v "cpt-$path")"
         done | sort -uk1 >&2
         exit
         ;;
