@@ -26,7 +26,7 @@ RUNTIME DEPENDS
 - tar [GNU tar, busybox, toybox, libarchive, etc.]
 
 MAKE DEPENDS
-- redo (optional, the repository contains minimal/do)
+- redo (optional, the repository contains tools/do)
 
 
 Directory Structure
