@@ -1,6 +1,5 @@
 #!/bin/sh -e
 # Check which package owns a file
-. cpt-lib
 
 case "$1" in ''|--help|-h) printf '%s\n' "usage: ${0##*/} [file]" ; exit 0 ; esac
 
