@@ -10,7 +10,7 @@ parser_definition() {
 
 if [ -f ./cpt-lib ]; then . ./cpt-lib; else . cpt-lib; fi
 
-[ "$1" ] || set -- "${PWD##*/}"; export CPT_PATH=${PWD%/*}:$CPT_PATH
+[ "$1" ] || { set -- "${PWD##*/}"; export CPT_PATH=${PWD%/*}:$CPT_PATH ;}
 
 [ -w "$CPT_ROOT/" ] || [ "$uid" = 0 ] || {
     as_root "$0" "$@"
