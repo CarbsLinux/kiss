@@ -389,7 +389,7 @@ as_root() {
            "$@"
 
     case ${su##*/} in
-        sudo|doas) "$su" -u "$user" -- env "$@" ;;
+        sls|sudo|doas) "$su" -u "$user" -- env "$@" ;;
         su)   su -c "env $* <&3" "$user" 3<&0 </dev/tty ;;
         *)    die "Invalid CPT_SU value: $su" ;;
     esac
@@ -1867,7 +1867,9 @@ create_cache() {
 
     # Figure out which 'sudo' command to use based on the user's choice or
     # what is available on the system.
-    su=${CPT_SU:-$(command -v sudo || command -v doas)} || su=su
+    su=${CPT_SU:-$(command -v sls    ||
+                   command -v sudo   ||
+                   command -v doas)} || su=su
 
     # Store the date and time of script invocation to be used as the name
     # of the log files the package manager creates uring builds.
