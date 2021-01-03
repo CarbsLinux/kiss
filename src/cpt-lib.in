@@ -45,6 +45,15 @@ trap_set() {
     esac
 }
 
+_seq() (
+    # Pure shell counter meant to be used in 'for' loops.
+    i=0 buf=''
+    while [ "$(( i += 1 ))" -le "$1" ]; do
+        buf="$buf $i "
+    done
+    printf '%s' "$buf"
+)
+
 _stat() (
     _user=; eval set -- "$(ls -ld "$1")"
     id -u "${_user:=$3}" >/dev/null 2>&1 || _user=root
