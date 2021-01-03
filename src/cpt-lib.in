@@ -45,6 +45,21 @@ trap_set() {
     esac
 }
 
+sepchar() (
+    # Seperate every character on the given string without resorting to external
+    # processes.
+    [ "$1" ] || return 0; str=$1; set --
+    while [ "$str" ]; do
+        str_tmp=$str
+        for i in $(_seq $(( ${#str} - 1 ))); do
+            str_tmp=${str_tmp%?}
+        done
+        set -- "$@" "$str_tmp"
+        str=${str#$str_tmp}
+    done
+    printf '%s\n' "$@"
+)
+
 _seq() (
     # Pure shell counter meant to be used in 'for' loops.
     i=0 buf=''
