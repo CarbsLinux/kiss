@@ -773,16 +773,29 @@ pkg_depends() {
             (pkg_list "$1" >/dev/null) && return
 
         while read -r dep type || [ "$dep" ]; do
+            # Skip comments and empty lines.
+            [ "${dep##\#*}" ] || continue
             # Skip test dependencies unless $CPT_TEST is set to 1.
-            case $type in test) [ "$CPT_TEST" = 1 ] || continue; esac
+            #
+            # Skip make dependencies on the 'tree' operation for child packages
+            # or when the 'first-nomake' argument is given.
+            case $type in
+                test) [ "$CPT_TEST" = 1 ] || continue ;;
+                make) [ "$2" = tree ] && [ -z "${3#first-nomake}" ] && continue
+            esac
 
-            # Recurse through the dependencies of the child packages.
-            [ "${dep##\#*}" ] && pkg_depends "$dep"
+            # Recurse through the dependencies of the child packages. Forward
+            # the 'tree' operation.
+            if [ "$2" = tree ]; then
+                pkg_depends "$dep" tree
+            else
+                pkg_depends "$dep"
+            fi
         done 2>/dev/null < "$(pkg_find "$1")/depends" ||:
 
         # After child dependencies are added to the list,
         # add the package which depends on them.
-        [ "$2" = explicit ] || deps="$deps $1 "
+        [ "$2" = explicit ] || [ "$3" ] || deps="$deps $1 "
     }
 }
 
@@ -1820,6 +1833,29 @@ pkg_get_base() (
         set -- "$@" "$pkg"
     done < "$CPT_ROOT/etc/cpt-base"
     if [ "$nonl" ]; then printf '%s ' "$@"; else printf '%s\n' "$@"; fi
+)
+
+pkg_gentree() (
+    # Generate an ordered dependency tree of a package. Useful for testing
+    # whether the generated dependency tree is enough to actually building a
+    # given package. A second argument can be given as a combination of
+    # characters (similar to 'tar(1)' keys) which will be used as an option
+    # parser. See the documentation for more information on the keys.
+    deps='' reverse='' nonl='' make_deps=first
+    for op in $(sepchar "$2"); do
+        case "$op" in
+            b) deps="$(pkg_get_base nonl)" ;;
+            x) make_deps=first-nomake ;;
+            r) reverse=1 ;;
+            n) nonl=1 ;;
+            *) return 1
+        esac
+    done
+    pkg_depends "$1" tree "${make_deps:+first}"
+    eval set -- "$deps"
+    pkg_order "$@"
+    if [ "$reverse" ]; then eval set -- "$redro"; else eval set -- "$order"; fi
+    if [ "$nonl" ];    then printf '%s ' "$@"; else printf '%s\n' "$@"; fi
 )
 
 pkg_clean() {
