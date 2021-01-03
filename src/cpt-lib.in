@@ -1809,6 +1809,19 @@ pkg_updates(){
     log "Updated all packages"
 }
 
+pkg_get_base() (
+    # Print the packages defined in the /etc/cpt-base file.
+    # If an argument is given, it prints a space seperated list instead
+    # of a list seperated by newlines.
+    [ -f "$CPT_ROOT/etc/cpt-base" ] || return 1
+    nonl=$1; set --
+    while read -r pkg _; do
+        [ "${pkg##\#*}" ] || continue
+        set -- "$@" "$pkg"
+    done < "$CPT_ROOT/etc/cpt-base"
+    if [ "$nonl" ]; then printf '%s ' "$@"; else printf '%s\n' "$@"; fi
+)
+
 pkg_clean() {
     # Clean up on exit or error. This removes everything related
     # to the build.
