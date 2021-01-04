@@ -1,5 +1,5 @@
 # See LICENSE for copyright information
-VERSION = 5.1.1
+VERSION = 5.1.2
 
 # Paths
 PREFIX    = /usr/local

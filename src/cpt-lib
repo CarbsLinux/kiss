@@ -8,7 +8,7 @@
 # Currently maintained by Cem Keylan.
 
 version() {
-    log "Carbs Packaging Tools" 5.1.1
+    log "Carbs Packaging Tools" 5.1.2
     exit 0
 }
 
