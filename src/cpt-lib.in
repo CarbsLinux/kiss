@@ -1826,7 +1826,9 @@ pkg_get_base() (
     # Print the packages defined in the /etc/cpt-base file.
     # If an argument is given, it prints a space seperated list instead
     # of a list seperated by newlines.
-    [ -f "$CPT_ROOT/etc/cpt-base" ] || return 1
+
+    # cpt-base is an optional file, return with success if it doesn't exist.
+    [ -f "$CPT_ROOT/etc/cpt-base" ] || return 0
     nonl=$1; set --
     while read -r pkg _; do
         [ "${pkg##\#*}" ] || continue
