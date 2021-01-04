@@ -28,7 +28,7 @@ redo_clean() {
     find . -type f \( -name '*.tmp' -o -name '*.did' -o -name '.dep*' -o -name '.target*' \) \
          -exec rm -f -- {} +
     [ "$DO_BUILT" ]  || find . -name '.do_built*' -exec rm -rf -- {} +
-    [ "$REDO_BASE" ] || rm -rf -- .redo
+    [ "$REDO_BASE" ] || find . -name .redo -type d -exec rm -rf -- {} +
 }
 
 targcheck() {
