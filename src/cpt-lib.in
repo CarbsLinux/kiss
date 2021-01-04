@@ -1830,9 +1830,13 @@ pkg_get_base() (
     # cpt-base is an optional file, return with success if it doesn't exist.
     [ -f "$CPT_ROOT/etc/cpt-base" ] || return 0
     nonl=$1; set --
-    while read -r pkg _; do
-        [ "${pkg##\#*}" ] || continue
-        set -- "$@" "$pkg"
+
+    # Older versions of shellcheck warns us that the variable is changing on the
+    # subshell. That is our purpose here, thank you very much.
+    # shellcheck disable=SC2030
+    while read -r pkgname _; do
+        [ "${pkgname##\#*}" ] || continue
+        set -- "$@" "$pkgname"
     done < "$CPT_ROOT/etc/cpt-base"
     if [ "$nonl" ]; then printf '%s ' "$@"; else printf '%s\n' "$@"; fi
 )
