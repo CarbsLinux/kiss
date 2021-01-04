@@ -6,7 +6,7 @@ if [ -f ./cpt-lib ]; then . ./cpt-lib; else . cpt-lib; fi
 case "$1" in
     --help|-h)
         out "usage: ${0##*/} [pkg...]"
-        exit 1
+        exit 0
         ;;
     --version|-v) version ;;
     '') set -- "${PWD##*/}"; export CPT_PATH=${PWD%/*}:$CPT_PATH
