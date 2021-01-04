@@ -9,6 +9,15 @@ this project _somewhat_ adheres to [Semantic Versioning].
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
 
+5.1.2 - 2020-12-24
+--------------------------------------------------------------------------------
+
+### Fixed
+- Fixed the `Makefile` installing files other than `cpt-*` files.
+- Fixed `pkg_swap()` bug where swapping a prefix file would change the following
+  file locations on the manifest as well.
+
+
 5.1.1 - 2020-12-20
 --------------------------------------------------------------------------------
 

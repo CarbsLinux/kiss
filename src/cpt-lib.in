@@ -1363,7 +1363,7 @@ pkg_swap() {
         # its manifest file to reflect this. We then resort this file
         # so no issues arise when removing packages.
         cp  -Pf "$CPT_ROOT/$2" "$pkg_owns>${alt#*>}"
-        sed "s#^$(regesc "$2")#${PWD#$CPT_ROOT}/$pkg_owns>${alt#*>}#" \
+        sed "s#^$(regesc "$2")\$#${PWD#$CPT_ROOT}/$pkg_owns>${alt#*>}#" \
             "../installed/$pkg_owns/manifest" |
             sort -r -o "../installed/$pkg_owns/manifest"
     fi
@@ -1371,7 +1371,7 @@ pkg_swap() {
     # Convert the desired alternative to a real file and rewrite
     # the manifest file to reflect this. The reverse of above.
     mv -f "$alt" "$CPT_ROOT/$2"
-    sed "s#^${PWD#$CPT_ROOT}/$(regesc "$alt")#$2#" "../installed/$1/manifest" |
+    sed "s#^${PWD#$CPT_ROOT}/$(regesc "$alt")\$#$2#" "../installed/$1/manifest" |
         sort -r -o "../installed/$1/manifest"
 }
 
