@@ -971,7 +971,7 @@ _seq 5
 
 *** =_stat()=
 :PROPERTIES:
-:DESCRIPTION: stat %U replacement
+:DESCRIPTION: 'stat %U' replacement
 :END:
 
 This function imitates =stat %U=. =stat= isn't defined by POSIX, and this is
@@ -983,7 +983,7 @@ cannot be found, it will return =root=.
 :DESCRIPTION: 'readlink -f' replacement
 :END:
 
-This function was taken from [[github:ko1nksm/readlinkf][POSIX sh readlinkf library by Koichi Nakashima]].
+This function was taken from [[https://github.com/ko1nksm/readlinkf][POSIX sh readlinkf library by Koichi Nakashima]].
 =readlink= is also not defined by POSIX, so this function uses =ls= to follow
 symbolic links until it reaches the actual file.
 

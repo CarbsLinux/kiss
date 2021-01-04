@@ -106,7 +106,9 @@ CPT Library
 * Option parsing::               Easy way of parsing options with cpt-lib
 * Message functions::            Communicate to users
 * Text functions::               Manipulate or check text
+* Portability functions::        Functions to replace non-POSIX commands
 * System Functions::
+* Package Functions::            Manipulate, or query anything related to packages
 
 Option parsing
 
@@ -126,10 +128,25 @@ Text functions
 * @samp{contains()}::            Check if a "string list" contains a word
 * @samp{regesc()}::              Escape regular expression characters
 * @samp{pop()}::                 Remove an item from a string list
+* @samp{sepchar()}::             Separate characters from a string
+
+Portability functions
+
+* @samp{_seq()}::                'seq(1)' but no newline
+* @samp{_stat()}::               'stat %U' replacement
+* @samp{_readlinkf()}::          'readlink -f' replacement
 
 System Functions
 
 * @samp{as_root()}::             Run a command as the root user
+
+Package Functions
+
+* @samp{pkg_owner()}::           Check which package owns the given file
+* @samp{pkg_isbuilt()}::         Check whether the given package is built
+* @samp{pkg_lint()}::            Check whether a package directory fits the standards
+* @samp{pkg_find()}::            Query package locations
+* @samp{pkg_gentree}::           Generate a dependency tree for the given package
 
 @end detailmenu
 @end menu
@@ -888,7 +905,9 @@ package manager library.
 * Option parsing::               Easy way of parsing options with cpt-lib
 * Message functions::            Communicate to users
 * Text functions::               Manipulate or check text
+* Portability functions::        Functions to replace non-POSIX commands
 * System Functions::
+* Package Functions::            Manipulate, or query anything related to packages
 @end menu
 
 @node Calling the library
@@ -1048,6 +1067,7 @@ Following functions are used to manipulate, check, or interact with text.
 * @samp{contains()}::            Check if a "string list" contains a word
 * @samp{regesc()}::              Escape regular expression characters
 * @samp{pop()}::                 Remove an item from a string list
+* @samp{sepchar()}::             Separate characters from a string
 @end menu
 
 @node @samp{contains()}
@@ -1087,8 +1107,70 @@ pop foo from $LIST
 pop foo from foo baz bar # Returns baz bar
 @end example
 
+@node @samp{sepchar()}
+@subsection @samp{sepchar()}
+
+This function can be used to separate characters from the given string without
+resorting to external resources.
+
+@example
+sepchar mystring
+# Prints:
+# m
+# y
+# s
+# t
+# r
+# i
+# n
+# g
+@end example
+
+@node Portability functions
+@section Portability functions
+
+These helper functions are used so that we don't depend on non-POSIX programs for
+certain functionality. They are prefixed with the @samp{_} character.
+
+@menu
+* @samp{_seq()}::                'seq(1)' but no newline
+* @samp{_stat()}::               'stat %U' replacement
+* @samp{_readlinkf()}::          'readlink -f' replacement
+@end menu
+
+@node @samp{_seq()}
+@subsection @samp{_seq()}
+
+This function is similar to @samp{seq(1)} except that it only takes a single argument
+and doesn't print any newlines. It is suitable to be used in @samp{for} loops.
+
+@example
+_seq 5
+# Prints:
+# 1 2 3 4 5
+@end example
+
+@node @samp{_stat()}
+@subsection @samp{_stat()}
+
+This function imitates @samp{stat %U}. @samp{stat} isn't defined by POSIX, and this is
+also a GNU extension. This function returns the owner of a file. If the owner
+cannot be found, it will return @samp{root}.
+
+@node @samp{_readlinkf()}
+@subsection @samp{_readlinkf()}
+
+This function was taken from @uref{https://github.com/ko1nksm/readlinkf, POSIX sh readlinkf library by Koichi Nakashima}.
+@samp{readlink} is also not defined by POSIX, so this function uses @samp{ls} to follow
+symbolic links until it reaches the actual file.
+
 @node System Functions
-@section System Functions
+@section @strong{TODO} System Functions
+
+@itemize
+@item
+Add description
+@end itemize
 
 @menu
 * @samp{as_root()}::             Run a command as the root user
@@ -1104,11 +1186,70 @@ following order:
 
 @enumerate
 @item
+@samp{sls}
+@item
 @samp{sudo}
 @item
 @samp{doas}
 @item
 @samp{su}
 @end enumerate
+
+@node Package Functions
+@section @strong{TODO} Package Functions
+
+Obviously, package functions are the most important ones for @samp{cpt-lib}, those
+are the ones you will use to build, to query, to manipulate, or to otherwise
+interact with packages.
+
+@menu
+* @samp{pkg_owner()}::           Check which package owns the given file
+* @samp{pkg_isbuilt()}::         Check whether the given package is built
+* @samp{pkg_lint()}::            Check whether a package directory fits the standards
+* @samp{pkg_find()}::            Query package locations
+* @samp{pkg_gentree}::           Generate a dependency tree for the given package
+@end menu
+
+@node @samp{pkg_owner()}
+@subsection @samp{pkg_owner()}
+
+This function can be used to determine the owner of a package. The first
+argument is used for flags that will be passed to @samp{grep}, and the second one is
+for the file query. Rest of the arguments can be used in order to specify the
+manifests to be used, but it is optional. @samp{pkg_owner()} will search for all the
+installed packages if no other arguments are given.
+
+@example
+# Example
+pkg_owner -lFx /usr/bin/grep  # Returns 'busybox'
+
+# An example call made by `pkg_fix_deps()` to figure out whether the built
+# package contains the file it depends.
+pkg_owner -l "/$@{dep#/@}\$" "$PWD/manifest" >/dev/null && continue
+pkg_owner -l "/$@{dep#/@}\$" "$@@" ||:
+@end example
+
+@node @samp{pkg_isbuilt()}
+@subsection @samp{pkg_isbuilt()}
+
+This function returns with success when the given package has a built tarball
+with the matching version and release strings from the repository.
+
+@node @samp{pkg_lint()}
+@subsection @samp{pkg_lint()}
+
+This function checks whether a given package fits the proper package
+specification. This function @strong{does not return with failure, it exits outright}
+if it fails.
+
+@node @samp{pkg_find()}
+@subsection @strong{TODO} @samp{pkg_find()}
+
+@samp{pkg_find()}
+
+@node @samp{pkg_gentree}
+@subsection @strong{TODO} @samp{pkg_gentree}
+
+Keep in mind /etc/cpt-base
 
 @bye
