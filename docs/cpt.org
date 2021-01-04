@@ -50,6 +50,7 @@ manual for *Carbs Packaging Tools*. For development logs see [[https://git.carbs
   - [[#text-functions][Text functions]]
   - [[#portability-functions][Portability functions]]
   - [[#system-functions][System Functions]]
+  - [[#package-functions][Package Functions]]
 
 * Copying
 :PROPERTIES:
@@ -1002,3 +1003,64 @@ following order:
 2. =sudo=
 3. =doas=
 4. =su=
+
+** TODO Package Functions
+:PROPERTIES:
+:DESCRIPTION: Manipulate, or query anything related to packages
+:END:
+
+Obviously, package functions are the most important ones for =cpt-lib=, those
+are the ones you will use to build, to query, to manipulate, or to otherwise
+interact with packages.
+
+*** =pkg_owner()=
+:PROPERTIES:
+:DESCRIPTION: Check which package owns the given file
+:END:
+
+This function can be used to determine the owner of a package. The first
+argument is used for flags that will be passed to =grep=, and the second one is
+for the file query. Rest of the arguments can be used in order to specify the
+manifests to be used, but it is optional. =pkg_owner()= will search for all the
+installed packages if no other arguments are given.
+
+#+begin_src sh
+# Example
+pkg_owner -lFx /usr/bin/grep  # Returns 'busybox'
+
+# An example call made by `pkg_fix_deps()` to figure out whether the built
+# package contains the file it depends.
+pkg_owner -l "/${dep#/}\$" "$PWD/manifest" >/dev/null && continue
+pkg_owner -l "/${dep#/}\$" "$@" ||:
+#+end_src
+
+*** =pkg_isbuilt()=
+:PROPERTIES:
+:DESCRIPTION: Check whether the given package is built
+:END:
+
+This function returns with success when the given package has a built tarball
+with the matching version and release strings from the repository.
+
+*** =pkg_lint()=
+:PROPERTIES:
+:DESCRIPTION: Check whether a package directory fits the standards
+:END:
+
+This function checks whether a given package fits the proper package
+specification. This function *does not return with failure, it exits outright*
+if it fails.
+
+*** TODO =pkg_find()=
+:PROPERTIES:
+:DESCRIPTION: Query package locations
+:END:
+
+=pkg_find()=
+
+*** TODO =pkg_gentree=
+:PROPERTIES:
+:DESCRIPTION: Generate a dependency tree for the given package
+:END:
+
+Keep in mind /etc/cpt-base
