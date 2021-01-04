@@ -14,13 +14,14 @@ cpt-lib
 [._]sw[a-p]
 
 ### Redo files
-/.redo
+.redo
 /.do_built
 /.do_built.dir
 *.tmp
 *.did
 .dep*
 .target*
+.lock.*
 
 ### Texinfo ###
 *.info
