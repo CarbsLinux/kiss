@@ -13,7 +13,7 @@ esac
 case "$1" in
     --help|-h)
         out "usage: ${0##*/} [-] [pkg file]"
-        exit 1
+        exit 0
         ;;
     --version|-v) version ;;
     -)
