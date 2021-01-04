@@ -998,6 +998,7 @@ environment variable is set, it will call the following arguments as the root
 user. It supports the following programs for privilege escalation with the
 following order:
 
-1. =sudo=
-2. =doas=
-3. =su=
+1. =sls=
+2. =sudo=
+3. =doas=
+4. =su=
