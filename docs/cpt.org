@@ -48,6 +48,7 @@ manual for *Carbs Packaging Tools*. For development logs see [[https://git.carbs
   - [[#option-parsing][Option parsing]]
   - [[#message-functions][Message functions]]
   - [[#text-functions][Text functions]]
+  - [[#portability-functions][Portability functions]]
   - [[#system-functions][System Functions]]
 
 * Copying
@@ -945,7 +946,48 @@ sepchar mystring
 # g
 #+end_src
 
-** System Functions
+** Portability functions
+:PROPERTIES:
+:DESCRIPTION: Functions to replace non-POSIX commands
+:END:
+
+These helper functions are used so that we don't depend on non-POSIX programs for
+certain functionality. They are prefixed with the =_= character.
+
+*** =_seq()=
+:PROPERTIES:
+:DESCRIPTION: 'seq(1)' but no newline
+:END:
+
+This function is similar to =seq(1)= except that it only takes a single argument
+and doesn't print any newlines. It is suitable to be used in =for= loops.
+
+#+begin_src sh
+_seq 5
+# Prints:
+# 1 2 3 4 5
+#+end_src
+
+*** =_stat()=
+:PROPERTIES:
+:DESCRIPTION: stat %U replacement
+:END:
+
+This function imitates =stat %U=. =stat= isn't defined by POSIX, and this is
+also a GNU extension. This function returns the owner of a file. If the owner
+cannot be found, it will return =root=.
+
+*** =_readlinkf()=
+:PROPERTIES:
+:DESCRIPTION: 'readlink -f' replacement
+:END:
+
+This function was taken from [[github:ko1nksm/readlinkf][POSIX sh readlinkf library by Koichi Nakashima]].
+=readlink= is also not defined by POSIX, so this function uses =ls= to follow
+symbolic links until it reaches the actual file.
+
+** TODO System Functions
+- [ ] Add description
 *** =as_root()=
 :PROPERTIES:
 :DESCRIPTION: Run a command as the root user
