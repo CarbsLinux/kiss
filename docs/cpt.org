@@ -890,11 +890,11 @@ Following functions are used to manipulate, check, or interact with text.
 given string. If the string is inside the list, it will return 0, otherwise 1.
 
 #+begin_src sh
-  # Usage
-  contains "$LIST" foo
+# Usage
+contains "$LIST" foo
 
-  contains "foo bar" foo  # Returns 0
-  contains "foo bar" baz  # Returns 1
+contains "foo bar" foo  # Returns 0
+contains "foo bar" baz  # Returns 1
 #+end_src
 
 *** =regesc()=
@@ -906,7 +906,7 @@ given string. If the string is inside the list, it will return 0, otherwise 1.
 in POSIX BRE. Those characters are, =$=, =.=, =*=, =[=, =\\=, and =^=.
 
 #+begin_src sh
-  regesc '^[$\'  # Returns \^\[\$\\
+regesc '^[$\'  # Returns \^\[\$\\
 #+end_src
 
 *** =pop()=
@@ -918,10 +918,31 @@ in POSIX BRE. Those characters are, =$=, =.=, =*=, =[=, =\\=, and =^=.
 call. Word splitting is intentional when using this function.
 
 #+begin_src sh
-  # Usage
-  pop foo from $LIST
+# Usage
+pop foo from $LIST
 
-  pop foo from foo baz bar # Returns baz bar
+pop foo from foo baz bar # Returns baz bar
+#+end_src
+
+*** =sepchar()=
+:PROPERTIES:
+:DESCRIPTION: Separate characters from a string
+:END:
+
+This function can be used to separate characters from the given string without
+resorting to external resources.
+
+#+begin_src sh
+sepchar mystring
+# Prints:
+# m
+# y
+# s
+# t
+# r
+# i
+# n
+# g
 #+end_src
 
 ** System Functions
