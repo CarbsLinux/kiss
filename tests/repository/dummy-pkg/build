@@ -1,0 +1,4 @@
+#!/bin/sh -e
+
+# Check that we are receiving 3 arguments
+[ "$3" ] || exit 1
