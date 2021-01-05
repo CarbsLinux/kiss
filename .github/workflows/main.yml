@@ -1,13 +1,21 @@
-name: test
-
+name: main
 on: [push, pull_request]
-
 jobs:
-  build:
-
+  setup:
     runs-on: ubuntu-latest
-
+    steps:
+      - name: Install shellspec
+        run: curl -fsSL https://git.io/shellspec | sh -s -- -p /usr/local -y
+  build:
+    runs-on: ubuntu-latest
+    needs: setup
     steps:
       - uses: actions/checkout@v1
-      - name: Run tests.
-        run: ./tools/do test
+      - name: Run do
+        run: ./tools/do
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - run: ./tools/do test
+      - run: shellspec
