@@ -9,6 +9,24 @@ this project _somewhat_ adheres to [Semantic Versioning].
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
 
+UNRELEASED
+--------------------------------------------------------------------------------
+
+### IMPORTANT
+- Switched to the `redo` build system.
+
+### Added
+- Added basic installation instructions to an `INSTALL` file.
+
+### Changed
+- All `src` scripts now exit with success after being called with `--help`.
+- Minor optimizations on `contrib` scripts.
+
+### Removed
+- Removed C binaries `cpt-readlink` and `cpt-stat` and instead replaced them
+  with `_readlink()` and `_stat()` library functions.
+
+
 5.1.2 - 2021-01-04
 --------------------------------------------------------------------------------
 
@@ -44,7 +62,8 @@ this project _somewhat_ adheres to [Semantic Versioning].
 
 ### Fixed
 - Moved option parsing to cpt-lib if `parser_definition` exists. This shouldn't
-  affect existing scripts where `cpt-lib` is called before the `p
+  affect existing scripts where `cpt-lib` is called before the parser is
+  defined.
 
 
 5.0.0 - 2020-10-06
