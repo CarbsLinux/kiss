@@ -17,6 +17,7 @@ UNRELEASED
 
 ### Added
 - Added basic installation instructions to an `INSTALL` file.
+- Added code coverage and unit tests using `shellspec`.
 
 ### Changed
 - All `src` scripts now exit with success after being called with `--help`.

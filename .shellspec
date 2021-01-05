@@ -1,0 +1,3 @@
+--kcov-options "--include-pattern=cpt-lib"
+--kcov-options "--include-pattern=/src/cpt,/contrib/cpt-"
+--kcov-options "--exclude-pattern=.in"
