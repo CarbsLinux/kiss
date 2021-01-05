@@ -429,16 +429,19 @@ pop() {
 }
 
 run_hook() {
-    # If a fourth parameter 'root' is specified, source
-    # the hook from a predefined location to avoid privilige
-    # escalation through user scripts.
+    # Store the CPT_HOOK variable so that we can revert it if it is changed.
+    oldCPT_HOOK=$CPT_HOOK
+
+    # If a fourth parameter 'root' is specified, source the hook from a
+    # predefined location to avoid privilige escalation through user scripts.
     [ "$4" ] && CPT_HOOK=$CPT_ROOT/etc/cpt-hook
 
-    [ -f "$CPT_HOOK" ] || return 0
+    [ -f "$CPT_HOOK" ] || { CPT_HOOK=$oldCPT_HOOK; return 0 ;}
 
     [ "$2" ] && log "$2" "Running $1 hook"
 
     TYPE=${1:-null} PKG=${2:-null} DEST=${3:-null} . "$CPT_HOOK"
+    CPT_HOOK=$oldCPT_HOOK
 }
 
 decompress() {
