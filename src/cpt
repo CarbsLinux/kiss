@@ -44,6 +44,12 @@ case "$arg" in
         [ "$2" ] || cpt-install "$@"
         exit
         ;;
+    cbi)
+        # Checksum, build and install.
+        cpt-checksum "$@"; cpt-build "$@"
+        [ "$2" ] || cpt-install "$@"
+        exit
+        ;;
     *) glob=1 ;;
 esac
 
