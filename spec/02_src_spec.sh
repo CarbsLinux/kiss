@@ -67,17 +67,14 @@ Describe 'Main toolchain'
 
    Describe 'cpt-list'
        no_db_dir() {
-           # Return 0 if database directory is empty (or doesn't exist)
-           # shellcheck disable=2012
-           count=$(ls -1 "$CPT_ROOT/var/db/cpt/installed" 2>/dev/null | wc -l)
-           [ "$count" -eq 0 ]
+           [ "$(pkgnum)" -eq 0 ]
        }
        Skip if "there are no installed packages" no_db_dir
        It 'lists all packages when called without arguments'
            When run script src/cpt-list
-           The lines of output should eq "$(ls -1 "$CPT_ROOT/var/db/cpt/installed" 2>/dev/null | wc -l)"
+           The lines of output should eq "$(pkgnum)"
        End
-           for firstpkg in "$CPT_ROOT/var/db/cpt/installed/"*; do firstpkg=${firstpkg##*/}; break; done
+       firstpkg=$(getfirstpkg)
        It 'only lists the packages given in the arguments'
            When run script src/cpt-list "$firstpkg"
            The word 1 of stdout should eq "$firstpkg"
