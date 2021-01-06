@@ -1040,6 +1040,7 @@ pkg_build() {
     for pkg do
         log "$pkg" "Building package ($((in = in + 1))/$#)"
 
+        mkdir -p "$mak_dir/$pkg"
         pkg_extract "$pkg"
         repo_dir=$(pkg_find "$pkg")
 
