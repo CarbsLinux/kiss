@@ -1,13 +1,16 @@
 #!/bin/sh -e
 # Portable install version that supports -D -m and -t
+# We have our own extension flag -s for running sed on the given files while
+# installing.
 usage() {
-    printf '%s\n' "usage: $0 [-D] [-m mode] source dest" \
-                  "   or: $0 [-D] [-m mode] [-t dir] [source...]" >&2
-    exit 1
+    printf '%s\n' "usage: $0 [-D] [-m mode] [-s sedcmd] source dest" \
+                  "   or: $0 [-D] [-m mode] [-s sedcmd] [-t dir] [source...]" >&2
+    exit 0
 }
 
 die() { printf '%s\n' "$@" >&2; exit 1;}
 
+sed=''
 mkdirp=''
 target=''
 mode=''
@@ -16,7 +19,7 @@ parse() {
     OPTIND=$(($#+1))
     while OPTARG= && [ $# -gt 0 ]; do
         case $1 in
-            -[tm]?*) OPTARG=$1; shift
+            -[stm]?*) OPTARG=$1; shift
                      eval 'set -- "${OPTARG%"${OPTARG#??}"}" "${OPTARG#??}"' ${1+'"$@"'}
                      ;;
             -[!-]?*) OPTARG=$1; shift
@@ -29,6 +32,11 @@ parse() {
                 eval '[ ${OPTARG+x} ] &&:' && OPTARG='1' || OPTARG=''
                 mkdirp="$OPTARG"
                 ;;
+            '-s')
+                [ $# -le 1 ] && set "required" "$1" && break
+                OPTARG=$2
+                sed="$OPTARG"
+                shift ;;
             '-t')
                 [ $# -le 1 ] && set "required" "$1" && break
                 OPTARG=$2
@@ -75,7 +83,11 @@ if [ "$target" ]; then
     mkdir -p "$target"
     for arg; do
         [ -d "$target/${arg##*/}" ] && die "$target/${arg##*/} is a directory"
-        cp "$arg" "$target/${arg##*/}"
+        if [ "$sed" ]; then
+            sed "$sed" < "$arg" > "$target/${arg##*/}"
+        else
+            cp "$arg" "$target"
+        fi
 
         # Most implementations set the mode to 0755 by default when -t is set.
         chmod "${mode:=0755}" "$target/${arg##*/}"
@@ -85,6 +97,6 @@ else
                       mkdir -p "${2%/*}"
     esac
     [ -d "$2" ] && die "$2 is a directory"
-    cp "$1" "$2"
+    if [ "$sed" ]; then sed "$sed" < "$1" > "$2"; else cp "$1" "$2"; fi
     chmod "${mode:=0755}" "$2"
 fi
