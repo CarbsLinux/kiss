@@ -17,7 +17,7 @@ cpt-list "$pkg" >/dev/null
 [ "$1" ] || set -- build depends sources version
 
 for file; do
-    [ -f "/var/db/cpt/installed/$pkg/$file" ] || continue
+    [ -f "$CPT_ROOT/var/db/cpt/installed/$pkg/$file" ] || continue
     printf '\033[1m%s:\033[m\n' "$file" >&2
-    cat "/var/db/cpt/installed/$pkg/$file"
+    cat "$CPT_ROOT/var/db/cpt/installed/$pkg/$file"
 done
