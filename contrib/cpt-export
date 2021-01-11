@@ -25,8 +25,10 @@ while read -r file; do
 done < "$CPT_ROOT/var/db/cpt/installed/$pkg/manifest"
 
 # Turn the list of files back into a package.
-: "${CPT_COMPRESS:=gz}"
-tar cf - -C / -- "$@" | case "$CPT_COMPRESS" in
+(cd "$CPT_ROOT/"
+ tar cf - -- "$@" || exit 1) |
+
+case "$CPT_COMPRESS" in
     bz2) bzip2 -z ;;
     gz)  gzip -6  ;;
     xz)  xz -zT 0 ;;
