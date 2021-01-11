@@ -1,6 +1,6 @@
 Describe 'Main toolchain'
     export PATH=$PWD/src:$PATH
-    export CPT_ROOT=$PWD/tests
+    export CPT_ROOT=$PWD/tests/02
     export CPT_PATH=$PWD/tests/repository
     install_dummy() { CPT_HOOK='' ./src/cpt bi dummy-pkg >/dev/null 2>&1 ;}
     remove_dummy() { rm -rf "${CPT_ROOT:?}/var" ;}
