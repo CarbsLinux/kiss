@@ -21,11 +21,11 @@ tarball="$PWD/$1#$ver-$rel.tar.${CPT_COMPRESS:=gz}"
 set --
 
 # Construct the argument list using each file.
-while read -r file; do
-    [ -d "$CPT_ROOT/$file" ] || set -- "$@" ".$file"
-done < "$CPT_ROOT/var/db/cpt/installed/$pkg/manifest"
+eval set -- "$(sed '/\/$/d;s|^|".|;s|$|"|' \
+    "$CPT_ROOT/var/db/cpt/installed/$pkg/manifest" | tr '\n' ' ')"
 
 # Turn the list of files back into a package.
+cd "$CPT_ROOT/"
  tar cf - -- "$@" | case "$CPT_COMPRESS" in
     bz2) bzip2 -z ;;
     gz)  gzip -6  ;;
