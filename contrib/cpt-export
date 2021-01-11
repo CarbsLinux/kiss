@@ -17,6 +17,7 @@ read -r ver rel 2>/dev/null < \
 
 # Reset the argument list.
 pkg=$1
+tarball="$PWD/$1#$ver-$rel.tar.${CPT_COMPRESS:=gz}"
 set --
 
 # Construct the argument list using each file.
@@ -25,15 +26,12 @@ while read -r file; do
 done < "$CPT_ROOT/var/db/cpt/installed/$pkg/manifest"
 
 # Turn the list of files back into a package.
-(cd "$CPT_ROOT/"
- tar cf - -- "$@" || exit 1) |
-
-case "$CPT_COMPRESS" in
+ tar cf - -- "$@" | case "$CPT_COMPRESS" in
     bz2) bzip2 -z ;;
     gz)  gzip -6  ;;
     xz)  xz -zT 0 ;;
     zst) zstd -3  ;;
     *)   gzip -6  ;;  # Fallback to gzip
-esac > "$pkg#$ver-$rel.tar.$CPT_COMPRESS"
+esac > "$tarball"
 
-printf 'tarball created in %s\n' "$PWD/$pkg#$ver-$rel.tar.$CPT_COMPRESS"
+printf 'tarball created in %s\n' "$tarball"
