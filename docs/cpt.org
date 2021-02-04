@@ -1056,7 +1056,20 @@ if it fails.
 :DESCRIPTION: Query package locations
 :END:
 
-=pkg_find()=
+=pkg_find()= is the tool for searching packages. It accepts up to 3 arguments.
+
+- $1: Query :: This is the only mandatory argument. It accepts globbing, meaning
+  that shell wildcards can be used in the query.
+- $2: Match :: If this exists =pkg_find()= will print every single match found
+  in the search path. If it doesn't, =pkg_find()= will print the first match and
+  exit.
+- $3: Type :: This is the argument to be passed to the =test= function. Unless
+  this argument is given, it defaults to =-d=, which tests for directories.
+
+#+begin_src sh
+pkg_find cpt
+#+end_src
+
 
 *** TODO =pkg_gentree=
 :PROPERTIES:
