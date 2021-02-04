@@ -72,11 +72,51 @@ Describe 'contrib scripts'
         End
     End
     Describe 'cpt-export'
+        chtmp() { cd "$CPT_ROOT/tmp" || return 1 ;}
+        cleanpkg() { rm -f "$CPT_PATH/contrib-dummy-pkg/contrib-dummy-pkg#1-1.tar.gz" ;}
+        Before chtmp
+        AfterAll cleanpkg
         firstpkg=$(getfirstpkg)
         It "exports a tarball of the given package"
-            cd "$CPT_ROOT/tmp" || return 1
             When run script "$(command -v cpt-export)" contrib-dummy-pkg
             The stdout should eq "tarball created in $CPT_ROOT/tmp/contrib-dummy-pkg#1-1.tar.gz"
+        End
+        It "exports the package of the current directory when called without arguments"
+            cd "$CPT_PATH/contrib-dummy-pkg" || return 1
+            When run script "$(command -v cpt-export)"
+            The stdout should eq "tarball created in $CPT_PATH/contrib-dummy-pkg/contrib-dummy-pkg#1-1.tar.gz"
+        End
+        It "prints usage information when called with --help"
+            When run script "$(command -v cpt-export)" --help
+            The word 1 of stdout should eq usage:
+        End
+        It "fallbacks to gz when CPT_COMPRESS has a typo"
+            export CPT_COMPRESS=typo
+            When run script "$(command -v cpt-export)" contrib-dummy-pkg
+            The stdout should eq "tarball created in $CPT_ROOT/tmp/contrib-dummy-pkg#1-1.tar.gz"
+        End
+        Parameters
+            bz2 bzip2
+            gz  gzip
+            xz  xz
+            zst zstd
+        End
+        Mock bzip2
+            cat
+        End
+        Mock gzip
+            cat
+        End
+        Mock xz
+            cat
+        End
+        Mock zstd
+            cat
+        End
+        It "uses the given CPT_COMPRESS value ($1)"
+            export "CPT_COMPRESS=$1"
+            When run script "$(command -v cpt-export)" contrib-dummy-pkg
+            The stdout should eq "tarball created in $CPT_ROOT/tmp/contrib-dummy-pkg#1-1.tar.$1"
         End
     End
 End

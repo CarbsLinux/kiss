@@ -93,4 +93,38 @@ Describe 'Main toolchain'
            The output should eq "$2"
        End
    End
+   Describe 'cpt-search'
+       It "searches packages inside the \$CPT_PATH and the system database"
+           When run script src/cpt-search dummy-pkg
+           The line 1 of output should eq "$CPT_PATH/dummy-pkg"
+           The line 2 of output should eq "$CPT_ROOT/var/db/cpt/installed/dummy-pkg"
+       End
+       It "only shows the first instance of a package with the '-s' flag"
+           When run script src/cpt-search -s dummy-pkg
+           The output should eq "$CPT_PATH/dummy-pkg"
+       End
+       It "only shows the first instance of a package with the '--single' flag"
+           When run script src/cpt-search --single dummy-pkg
+           The output should eq "$CPT_PATH/dummy-pkg"
+       End
+       It "shows other locations of the package inside a package directory with the '-o' flag"
+           cd "$CPT_PATH/dummy-pkg" || return 1
+           When run script "$(command -v cpt-search)" -o
+           The output should eq "$CPT_ROOT/var/db/cpt/installed/dummy-pkg"
+       End
+       It "shows other locations of the package inside a package directory with the '--others' flag"
+           cd "$CPT_PATH/dummy-pkg" || return 1
+           When run script "$(command -v cpt-search)" --others
+           The output should eq "$CPT_ROOT/var/db/cpt/installed/dummy-pkg"
+       End
+       Parameters
+           'd*'
+           'd???y-?kg'
+           '[Dd][uU]*-?*g*'
+       End
+       It "accepts regular expressions"
+           When run script src/cpt-search -s "$1"
+           The output should eq "$CPT_PATH/dummy-pkg"
+       End
+   End
 End
