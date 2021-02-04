@@ -1,21 +1,21 @@
 #!/bin/sh -ef
 # List and swap to alternatives
 
+parser_definition() {
+    setup REST help:usage -- "usage: ${0##*/} [-] [package file]"
+    global_options
+}
+
 if [ -f ./cpt-lib ]; then . ./cpt-lib; else . cpt-lib; fi
 
-case "$1" in --version|--help|-v|-h|'') ;; *)
-    [ -w "$CPT_ROOT/" ] || [ "$uid" = 0 ] || {
+# We don't need to be root in order to list alternatives, so skip privilege
+# elevation if no arguments are passed to the script.
+[ -z "$1" ] || [ -w "$CPT_ROOT/" ] || [ "$uid" = 0 ] || {
         as_root "$0" "$@"
         exit $?
-    }
-esac
+}
 
 case "$1" in
-    --help|-h)
-        out "usage: ${0##*/} [-] [pkg file]"
-        exit 0
-        ;;
-    --version|-v) version ;;
     -)
         while read -r pkg path; do
             pkg_swap "$pkg" "$path"
