@@ -17,16 +17,27 @@ the `CHANGELOG.md` file.
 Dependencies
 --------------------------------------------------------------------------------
 
-To build and use cpt, you need the following software.
+To build and use cpt, you need the following software:
 
-RUNTIME DEPENDS
 - rsync
 - curl
 - POSIX base utilities [coreutils, busybox, sbase, etc.]
-- tar [GNU tar, busybox, toybox, libarchive, etc.]
+- pax or tar [GNU tar, busybox, toybox, libarchive, etc.]
+- Common compression utilities such as gzip, bzip2, xz, etc.
 
-MAKE DEPENDS
-- redo (optional, the repository contains tools/do)
+
+In order to build the documentation, you will need the following software:
+
+- texinfo (for generating '.info' pages)
+- Emacs   (for generating '.texi' and '.txt' pages)
+
+However, distributed tarballs come with info pages, and '.texi' and '.txt' files
+are committed directly into the repository, meaning that you don't need
+`texinfo` if you are using a tarball, and you don't need Emacs as long as you
+don't edit the documentation.
+
+You can also completely disable the build/installation of the documentation by
+either passing `DOCS=no` to `make` or editing `config.mk` to disable it.
 
 
 Directory Structure

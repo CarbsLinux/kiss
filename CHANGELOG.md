@@ -12,17 +12,16 @@ this project _somewhat_ adheres to [Semantic Versioning].
 UNRELEASED
 --------------------------------------------------------------------------------
 
-### IMPORTANT
-- Switched to the `redo` build system.
-
 ### Added
-- Added basic installation instructions to an `INSTALL` file.
-- Added code coverage and unit tests using `shellspec`.
+- Added unit tests using `shellspec`.
+- Added support for `pax` for tarball extraction.
 
 ### Changed
+- Moved `cpt-lib` to `cpt-lib.in`.
 - All `src` scripts now exit with success after being called with `--help`.
 - Minor optimizations on `contrib` scripts.
-- Huge speed improvement on `cpt-export`
+- Huge speed improvement on `cpt-export`.
+- Updated the `getoptions` library to version `2.5.0`
 
 ### Fixed
 - Fixed `cpt-cat` not using the `CPT_ROOT` value.
@@ -53,7 +52,7 @@ UNRELEASED
 --------------------------------------------------------------------------------
 
 ### IMPORTANT
-- The `pkg_fixdeps()` function has been renmaed to `pkg_fix_deps()`.
+- The `pkg_fixdeps()` function has been renamed to `pkg_fix_deps()`.
 - `cpt-lib` now parses options for you if `parser_definition()` is defined
   before being called.
 

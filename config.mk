@@ -19,5 +19,5 @@ DOCS = yes
 
 # Files to be added into the distribution tarball
 DISTFILES = contrib docs man spec src tests tools \
-            .dir-locals.el CHANGELOG.md INSTALL LICENSE \
+            .dir-locals.el CHANGELOG.md LICENSE \
             Makefile README config.mk cpt-base
