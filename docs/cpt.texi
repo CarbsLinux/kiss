@@ -1245,7 +1245,24 @@ if it fails.
 @node @samp{pkg_find()}
 @subsection @strong{TODO} @samp{pkg_find()}
 
-@samp{pkg_find()}
+@samp{pkg_find()} is the tool for searching packages. It accepts up to 3 arguments.
+
+@table @asis
+@item $1: Query
+This is the only mandatory argument. It accepts globbing, meaning
+that shell wildcards can be used in the query.
+@item $2: Match
+If this exists @samp{pkg_find()} will print every single match found
+in the search path. If it doesn't, @samp{pkg_find()} will print the first match and
+exit.
+@item $3: Type
+This is the argument to be passed to the @samp{test} function. Unless
+this argument is given, it defaults to @samp{-d}, which tests for directories.
+@end table
+
+@example
+pkg_find cpt
+@end example
 
 @node @samp{pkg_gentree}
 @subsection @strong{TODO} @samp{pkg_gentree}

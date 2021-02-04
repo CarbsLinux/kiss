@@ -1,0 +1,1109 @@
+			_______________________
+
+			 CARBS PACKAGING TOOLS
+			      User Manual
+
+			       Cem Keylan
+			_______________________
+
+
+			   February 04, 2021
+
+
+Table of Contents
+_________________
+
+1. Copying
+2. Preface
+3. Usage
+.. 1. cpt-alternatives
+.. 2. cpt-build
+.. 3. cpt-checksum
+.. 4. cpt-download
+.. 5. cpt-install
+.. 6. cpt-list
+.. 7. cpt-remove
+.. 8. cpt-search
+.. 9. cpt-update
+.. 10. Global Flags
+4. Environment Variables
+.. 1. `CPT_PATH'
+..... 1. Repository preferences
+..... 2. Setting the `CPT_PATH'
+.. 2. `CPT_COMPRESS'
+.. 3. `CPT_FORCE'
+.. 4. `CPT_PID'
+5. Hooks
+.. 1. Editing the `build' file during pre-build
+6. Packaging System
+.. 1. `build'
+.. 2. `sources'
+.. 3. `checksums'
+.. 4. `version'
+.. 5. `depends'
+.. 6. `post-install'
+.. 7. `message'
+.. 8. `test'
+7. Rsync Repositories
+.. 1. Setting up an Rsync repository
+8. CPT Library
+.. 1. Calling the library
+.. 2. Option parsing
+..... 1. Defining a parser
+..... 2. `global_options()'
+.. 3. Message functions
+..... 1. `out()'
+..... 2. `log()'
+..... 3. `die()'
+..... 4. `warn()'
+..... 5. `prompt()'
+.. 4. Text functions
+..... 1. `contains()'
+..... 2. `regesc()'
+..... 3. `pop()'
+..... 4. `sepchar()'
+.. 5. Portability functions
+..... 1. `_seq()'
+..... 2. `_stat()'
+..... 3. `_readlinkf()'
+.. 6. TODO System Functions
+..... 1. `as_root()'
+.. 7. TODO Package Functions
+..... 1. `pkg_owner()'
+..... 2. `pkg_isbuilt()'
+..... 3. `pkg_lint()'
+..... 4. TODO `pkg_find()'
+..... 5. TODO `pkg_gentree'
+
+
+This is a reference document containing both the user-guide and the
+development manual for *Carbs Packaging Tools*. For development logs see
+[the git repository].
+
+
+[the git repository] <https://git.carbslinux.org/cpt>
+
+
+1 Copying
+=========
+
+  Copyright (c) 2020 Cem Keylan
+
+        Permission is granted to copy, distribute and/or modify
+        this document under the terms of the GNU Free
+        Documentation License, Version 1.3 or any later version
+        published by the Free Software Foundation; with no
+        Invariant Sections, with no Front-Cover Texts and no
+        Back-Cover Texts. A copy of the license is included in the
+        section entitled "GNU Free Documentation License."
+
+
+2 Preface
+=========
+
+  Carbs Linux uses its own package management toolchain named `cpt'
+  which was initially forked from the [kiss] package manager. Unlike
+  `kiss', however, its main goal is being easily extendable. Instead of
+  being a single file package manager, it revolves around the shell
+  library `cpt-lib', and many tools that wrap around it. This document
+  aims to document both the usage of the distributed tools and document
+  the library functions.
+
+
+[kiss] <https://github.com/kisslinux/kiss>
+
+
+3 Usage
+=======
+
+  `cpt' is formed of many tools combined in a single environment,
+  similar to `git'. When you run `cpt' without any arguments, it will
+  show all available tools and their explanations. Here is an example
+  call with extra scripts on my system:
+
+  ,----
+  | -> Carbs Packaging Tool
+  | -> add               Commit the current directory as a new package
+  | -> alternatives      List and swap to alternatives
+  | -> build             Build a package
+  | -> bump              Commit the current directory as a version bump
+  | -> cargo-urlgen      Create static cargo sources for Rust packages
+  | -> cargolock-urlgen  Convert the given Cargo.lock file to sources
+  | -> cat               Concatanate package files in the installed package database
+  | -> changelog         Print the git log of the specific package
+  | -> chbuild           Create/destroy temporary chroots
+  | -> checkmissing      Verify package manifests
+  | -> checksum          Generate checksums
+  | -> chroot            Enter a chroot
+  | -> commit            Commit a package without the prefix of 'package:'
+  | -> depends           Display a package's dependencies
+  | -> download          Download sources for the given package
+  | -> exec              Execute a command inside the alternatives system
+  | -> export            Turn an installed package into a CPT tarball
+  | -> fork              Fork a package to the current directory
+  | -> getchoice         Prints the full path to a file in the alternatives system.
+  | -> install           Install a package
+  | -> link              Link a forked package's files to the other repository
+  | -> list              List installed packages
+  | -> maintainer        Find the maintainer of a package
+  | -> manifest          Display all files owned by a package
+  | -> manifest-tree     Display all files owned by a package with a tree view
+  | -> new               Create a boilerplate CPT package
+  | -> orphans           List orphaned packages
+  | -> owns              Check which package owns a file
+  | -> rel               Bump the release number of a package
+  | -> remove            Remove a package
+  | -> repodepends       Display a package's dependencies in the repository
+  | -> reporevdepends    Display packages on the repository which depend on package
+  | -> reset             Remove all packages except for the base
+  | -> revdepends        Display packages which depend on package
+  | -> search            Search for a package
+  | -> size              Show the size on disk for a package
+  | -> source            Extract sources of a given package to the current directory
+  | -> update            Check for updates
+  `----
+
+
+3.1 cpt-alternatives
+~~~~~~~~~~~~~~~~~~~~
+
+  You can list and swap to alternatives using `cpt-alternatives', or
+  `cpt a' for short. When run without alternatives, it will list
+  alternatives. It can read from standard input if `-' is given as an
+  argument.
+
+  *Examples*
+
+  1. List alternatives.
+
+  ,----
+  | $ cpt-alternatives
+  | ncurses /usr/bin/clear
+  | ncurses /usr/bin/reset
+  `----
+
+  1. Swap to `clear' from `ncurses'.
+
+  ,----
+  | $ cpt-alternatives ncurses /usr/bin/clear
+  | -> Swapping '/usr/bin/clear' from 'busybox' to 'ncurses'
+  `----
+
+  1. Swap in bulk (all of `sbase').
+
+  ,----
+  | $ cpt a | grep ^sbase | cpt a -
+  `----
+
+
+3.2 cpt-build
+~~~~~~~~~~~~~
+
+  `cpt-build' will build given packages and their dependencies. If
+  multiple packages are specified, it will ask to install the packages
+  as well.
+
+   Flags           Explanation 
+  -----------------------------
+   `-t', `--test'  Run tests   
+
+
+3.3 cpt-checksum
+~~~~~~~~~~~~~~~~
+
+  `cpt-checksum' will generate a `checksums' file from the package's
+  sources.
+
+
+3.4 cpt-download
+~~~~~~~~~~~~~~~~
+
+  `cpt-download' will download the sources of a package.
+
+
+3.5 cpt-install
+~~~~~~~~~~~~~~~
+
+  `cpt-install' will install given packages.
+
+
+3.6 cpt-list
+~~~~~~~~~~~~
+
+  When called without arguments, `cpt-list' will print all installed
+  packages. You can add package names as arguments to check whether they
+  are installed or not. In success, `cpt-list' will exit with status 0
+  if all given packages are installed, it will return 1 if any of the
+  given packages aren't installed.
+
+   Flags              Explanation                            
+  -----------------------------------------------------------
+   `-c', `--current'  Use the current directory as a package 
+
+
+3.7 cpt-remove
+~~~~~~~~~~~~~~
+
+  `cpt-remove' will remove given packages.
+
+
+3.8 cpt-search
+~~~~~~~~~~~~~~
+
+  `cpt-search' will search for packages, it accepts regular expressions
+  as well.
+
+   Flags             Explanation                               
+  -------------------------------------------------------------
+   `-s', `--single'  Only show the first instance of a package 
+
+
+  ,----
+  | $ cpt-search 'alsa-*'
+  | /var/db/cpt/repo/extra/alsa-lib
+  | /var/db/cpt/repo/extra/alsa-utils
+  | /var/db/cpt/installed/alsa-lib
+  | /var/db/cpt/installed/alsa-utils
+  | 
+  | $ cpt-search emacs
+  | /home/cem/repos/main/community/emacs
+  | /home/cem/repos/kiss-community/community/emacs
+  | /var/db/cpt/installed/emacs
+  | 
+  | $ cpt-search --single emacs
+  | /home/cem/repos/main/community/emacs
+  `----
+
+
+3.9 cpt-update
+~~~~~~~~~~~~~~
+
+  `cpt-update' will update the packages on your system. It fetches
+  remote repositories, and builds, and installs packages that have
+  versions different from the ones installed on the system. It doesn't
+  check if the version string is actually higher, it only checks whether
+  they differ.
+
+   Flags                 Explanation                          
+  ------------------------------------------------------------
+   `-d', `--download'    Only download updatable packages     
+   `-n', `--no-fetch'    Do not update remote repositories    
+   `-o', `--only-fetch'  Only fetch the repositories and exit 
+
+
+3.10 Global Flags
+~~~~~~~~~~~~~~~~~
+
+   Flags                Explanation                        
+  ---------------------------------------------------------
+   `-f', `--force'      Force operation, [See `CPT_FORCE'] 
+   `-y', `--no-prompt'  Do not prompt for confirmation     
+   `-root CPT_ROOT'     Use an alternate root directory    
+   `-h', `--help'       Show this help message             
+   `-v', `--version'    Print version information          
+
+
+[See `CPT_FORCE'] See section 4.3
+
+
+4 Environment Variables
+=======================
+
+  Since there is no configuration file for cpt, the package manager is
+  configured through environment variables. These can be set per
+  operation, or be set to your shell configuration or `~/.profile'. Here
+  are the environment variables that alter the behaviour of `cpt':
+
+   ENVIRONMENT VARIABLE  Effects                                                                       
+  -----------------------------------------------------------------------------------------------------
+   `CPT_PATH'            Set the locations of your repositories. It is similar to the `PATH' variable. 
+   `XDG_CACHE_HOME'      Unless this is set, the `~/.cache' directory will be used instead.            
+   `CPT_CACHE'           The cache directory for `cpt'. Default: `$XDG_CACHE_HOME/cpt'                 
+   `CPT_CHOICE'          If this is set to 0, a package installation will be aborted on conflicts.     
+   `CPT_COMPRESS'        Program used to compress package tarballs.                                    
+   `CPT_DEBUG'           If set to 1, temporary directories will not be removed after the operation.   
+   `CPT_FETCH'           If set to 0, `cpt-update' will not fetch repositories.                        
+   `CPT_FORCE'           Force operation.                                                              
+   `CPT_HOOK'            Location for the hook file.                                                   
+   `CPT_KEEPLOG'         If set to 1, cpt will keep logs regardless of operation success.              
+   `CPT_PID'             Set the temporary build directory name.                                       
+   `CPT_PROMPT'          If set to 0, `cpt' will not prompt you for anything.                          
+   `CPT_ROOT'            If this variable is set, `cpt' will assume this as the system root.           
+   `CPT_TEST'            If set to 1, `cpt-build' will run tests whenever available.                   
+   `CPT_TMPDIR'          The directory to create the temporary directories.                            
+
+
+4.1 `CPT_PATH'
+~~~~~~~~~~~~~~
+
+  Similar to the `PATH' variable, `cpt' find repositories from the
+  `CPT_PATH' variable. Here is an example:
+
+  ,----
+  | CPT_PATH=$HOME/repos/repo1:$HOME/repos/repo2:$HOME/repos/repo3
+  `----
+
+  This is a simplistic and a structured example for repository
+  locations, but it doesn't necessarily need to be as tidy as the
+  example above. Here is an example for something a little more complex.
+
+  ,----
+  | CPT_PATH=$HOME/repos/overrides:/var/db/cpt/repo/core:/var/db/cpt/repo/extra:$HOME/repos/personal
+  `----
+
+  This example brings us to the next section of this document.
+
+
+4.1.1 Repository preferences
+----------------------------
+
+  When you are using multiple repositories from multiple vendors, you
+  will find out that some repositories have the same packages. `cpt'
+  doesn't care about conflicting packages. If you want to build a
+  package that exists on multiple repositories, `cpt' will build the
+  first matching package. This means that if `grep' package (for the
+  sake of an example) exists on both `$HOME/repos/personal' and
+  `$HOME/repos/carbs/extra', and you want to install from your personal
+  repository, you must set `CPT_PATH' so that your personal repository
+  is listed before the `extra' repository.
+
+  ,----
+  | CPT_PATH=$HOME/repos/personal:$HOME/repos/carbs/extra
+  `----
+
+
+4.1.2 Setting the `CPT_PATH'
+----------------------------
+
+  You can set the `CPT_PATH' variable on your shell configuration or
+  your `.profile' file in a way that is easy to read.
+
+  The below example sets `CPT_PATH' in a way that is easy to understand
+  which repository comes first:
+
+  ,----
+  | CPT_PATH=$HOME/repos/overrides
+  | CPT_PATH=$CPT_PATH:$HOME/repos/carbs/core
+  | CPT_PATH=$CPT_PATH:$HOME/repos/carbs/extra
+  | CPT_PATH=$CPT_PATH:$HOME/repos/carbs/xorg
+  | CPT_PATH=$CPT_PATH:$HOME/repos/personal
+  | export CPT_PATH
+  `----
+
+
+4.2 `CPT_COMPRESS'
+~~~~~~~~~~~~~~~~~~
+
+  When setting the `CPT_COMPRESS' value, you should set the name of the
+  default suffixes for the program. Available values are:
+
+  - `gz'
+  - `zst'
+  - `bz2'
+  - `xz'
+
+  Defaults to `gz'.
+
+
+4.3 `CPT_FORCE'
+~~~~~~~~~~~~~~~
+
+  If this is set to 1, some of the `cpt' tools will continue regardless
+  of errors or skip certain checks. Here are some examples:
+
+  - `cpt-install' will install a package without verifying its manifest.
+  - `cpt-install' will install a package even when there are missing
+    dependencies.
+  - `cpt-remove' will remove packages even when there are other packages
+    that depend on the current package.
+
+  Defaults to 0.
+
+
+4.4 `CPT_PID'
+~~~~~~~~~~~~~
+
+  If this variable is set, the temporary files will be created with this
+  variable as the suffix, instead of the PID of the `cpt' process. The
+  advantage is that you can know exactly where the build directory is
+  located, while the disadvantage is that there will be issues with
+  multiple operations at the same time. So the best way to use this
+  variable is during one-time `cpt' calls.
+
+  ,----
+  | CPT_PID=mesa cpt b mesa
+  `----
+
+  By running the above, you will know that the created build directories
+  will end with the `*-mesa' suffix.
+
+
+5 Hooks
+=======
+
+  Hooks can be used in order to change the runtime behaviour of the
+  package manager.  There are a variety of package hooks, mostly self
+  explanatory:
+
+  - pre-build
+  - post-build
+  - build-fail
+  - pre-test
+  - test-fail
+  - pre-install
+  - post-install
+  - pre-remove
+  - post-remove
+  - pre-fetch
+  - post-fetch
+  - post-package
+
+  In order to use hooks, you will need to set the `CPT_HOOK' variable
+  pointing to your hook file. Your hook file *MUST* be a POSIX shell
+  script as its contents are sourced by the package manager.
+
+  The hook is given 3 variables when it is executed. Those are:
+
+   Variable  Explanation                                                  
+  ------------------------------------------------------------------------
+   `$TYPE'   The type of the hook, (`pre-build', `post-build', etc.)      
+   `$PKG'    The package that `cpt' is currently working on. Can be null. 
+   `$DEST'   The destination of the operation. Can be null.               
+
+
+5.1 Editing the `build' file during pre-build
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  You can edit the `build' file during pre-build. The file is copied
+  from the repository to the build directory named as `.build.cpt'. You
+  can use `sed' or any other tool to edit the build file. After the
+  build is complete, a `diff' file will be placed to the package
+  database named as `build.diff'. Here is an example `build' file
+  manipulation during the pre-build hook.
+
+  ,----
+  | cat <<EOF> .build.cpt
+  | #!/bin/sh -e
+  | 
+  | for patch in bash50-0??; do
+  |     patch -p0 < "\$patch"
+  | done
+  | 
+  | export LDFLAGS=-static
+  | 
+  | ./configure \
+  |     --prefix=/usr \
+  |     --without-bash-malloc \
+  |     --disable-nls
+  | 
+  | export MAKEFLAGS="TERMCAP_LIB=/usr/lib/libncursesw.a $MAKEFLAGS"
+  | 
+  | make
+  | make DESTDIR="\$1" install
+  | 
+  | ln -s bash "\$1/usr/bin/sh"
+  | EOF
+  `----
+
+
+6 Packaging System
+==================
+
+  A package is formed of several files, these are:
+
+  - 6.1
+  - 6.2
+  - 6.3
+  - 6.4
+  - 6.5
+  - 6.6
+  - 6.7
+  - 6.8
+
+  Any other file can be added to the package directory at the discretion
+  of the package maintainer. Everything in the package directory will
+  also be added to the package database that is located on
+  `/var/db/cpt/installed'. These can be patches, configuration files,
+  etc.
+
+
+6.1 `build'
+~~~~~~~~~~~
+
+  Typically `build' files are shell scripts that run commands to prepare
+  the source code to be installed on the target system. Even though we
+  will be assuming that the `build' file is a POSIX shell script (for
+  portability's sake), `build' files can be any executable program from
+  binary programs to `perl' scripts.
+
+  The contents of a build script do not need to follow a certain rule
+  for the package manager, except for the fact that the user needs the
+  permission to execute the file.
+
+  An important advice is to append an '-e' to the shebang (#!/bin/sh -e)
+  so that the build script exits on compilation error.
+
+  Build is run with three arguments (`$#')
+
+  - Location of the package directory (DESTDIR)
+  - Package version
+  - System architecture
+
+
+6.2 `sources'
+~~~~~~~~~~~~~
+
+  `sources' file is a list of files and sources that will be put to the
+  build directory during the build process. Those can be remote sources
+  (such as tarballs), git repositories, and files that reside on the
+  package directory.
+
+  The syntax is pretty simple for the `soures' file; `src dest'. The
+  `dest' parameter is optional. It is the directory that the source will
+  be placed in.  Here is the `sources' file for the `gst-plugins'
+  package:
+
+  ,----
+  | https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.16.2.tar.xz good
+  | https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.16.2.tar.xz   bad
+  | https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.16.2.tar.xz ugly
+  | https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.16.2.tar.xz               libav
+  `----
+
+  This file is read from the package manager as space seperated. Files
+  that begin with a `#' comment are ignored. The first value points to
+  the location of the source.
+
+  If it starts with a protcol url, (such as <ftp://> <http://>
+  <https://>) it will be downloaded with `curl'.
+
+  If the source is a git repository, it shall be prefixed with a `git+'
+  git(1) will be used to do a shallow clone of the repository. If the
+  commit is suffixed by a history pointer, git will checkout the
+  relevant revision. So,
+
+  `git+git://example.com/pub/repo@v1.2.3'
+        will checkout the tag named "v1.2.3"
+  `git+git://example.com/pub/repo#development'
+        will checkout the branch named "development"
+  `git+git://example.com/pub/repo#1a314s87'
+        will checkout the commit named "1a314s87"
+
+  Other files are assumed to be residing in the package directory. They
+  should be added with their paths relative to the package directory.
+
+
+6.3 `checksums'
+~~~~~~~~~~~~~~~
+
+  checksums file is generated by the `cpt c pkg' command. It is
+  generated according to the order of the sources file. That's why you
+  shouldn't be editing it manually. The checksums file is created with
+  the digests of the files using the sha256 algorithm.
+
+
+6.4 `version'
+~~~~~~~~~~~~~
+
+  The version file includes the version of the software and the release
+  number of of the package on a space seperated format. The contents of
+  the file should look like below.
+
+  ,----
+  | 1.3.2 1
+  `----
+
+
+6.5 `depends'
+~~~~~~~~~~~~~
+
+  This is a list of dependencies that must be installed before a package
+  build. You can append "make" after a dependency to mark a package is
+  only required during the build process of a package. Packages marked
+  as a make dependency can be removed after the build. There are also
+  "test" dependencies. These dependencies are only installed if either
+  the `CPT_TEST' is set to 1, or the build is run with the `-t' or
+  `--test' options. So, a package package could have the following
+  `depends' file:
+
+  ,----
+  | linux-headers make
+  | python        test
+  | zlib
+  `----
+
+
+6.6 `post-install'
+~~~~~~~~~~~~~~~~~~
+
+  `post-install' files have the same requirements as the build
+  script. They will be run after the package is installed as root (or as
+  the user if the user has write permissions on `CPT_ROOT').
+
+
+6.7 `message'
+~~~~~~~~~~~~~
+
+  This plaintext file will be outputted with `cat' after every package
+  is installed.
+
+
+6.8 `test'
+~~~~~~~~~~
+
+  Test files are mainly for the repository maintainer to test the
+  packages, and will only run if the user has the `CPT_TEST' variable
+  set, or the build is run with the `-t' or `--test' options. This
+  script is run on the build directory. It is run right after the build
+  script is finished.
+
+
+7 Rsync Repositories
+====================
+
+  Rsync repositories are simple to serve and simple to use. In the
+  repository directory, there needs to be a `.rsync' file that points to
+  the remote of the repository. This is used in order to fetch changes
+  from the upstream. `.rsync' file looks like this for the core
+  repository:
+
+  ,----
+  | rsync://carbslinux.org/repo/core
+  `----
+
+  Rsync repositories have some few distinctions when it comes to
+  fetching them.  They can be either synced individually or as a
+  "root". There are 2 important files, those are `.rsync' and
+  `.rsync_root'. Here is the Carbs Linux rsync repository structure.
+
+  ,----
+  |            /
+  |    -----------------
+  |   |                |
+  | .rsync           core/
+  |           ----------------
+  |           |              |
+  |         .rsync      .rsync_root
+  `----
+
+  Unlike git repositories, they don't have a defined "root"
+  directory. This is both an advantage and a disadvantage. This way, we
+  can sync individual repositories, but that also means we need extra
+  files to define root directories and repository locations. Here is the
+  content for each of these files:
+
+  ,----
+  | /.rsync:           rsync://carbslinux.org/repo
+  | /core/.rsync:      rsync://carbslinux.org/repo/core
+  | /core/.rsync_root: ..
+  `----
+
+  The `.rsync_root' file on the core repository points to the upper
+  directory.  If a `.rsync' file exists on the upper directory, this
+  means that is the whole repository and will sync the entire repository
+  instead of each individual repository.
+
+  If the upper directory doesn't have this `.rsync' file, this means
+  that this is an individual repository, and the package manager will
+  fetch accordingly.
+
+
+7.1 Setting up an Rsync repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Carbs Linux repositories automatically sync from the git repostitories
+  and serve it through the rsync daemon. Here is a sample shell script
+  that I use in order to sync repositories. Feel free to customize for
+  your own use.
+
+  ,----
+  | #!/bin/sh
+  | HOSTNAME="rsync://carbslinux.org/repo"
+  | GITDIR="/pub/git/repo"
+  | SHAREDIR="/pub/share/repo"
+  | git -C "$GITDIR" pull
+  | 
+  | rsync -avcC --delete --include=core --exclude=.rsync,.rsync_root "$GITDIR/." "$SHAREDIR"
+  | 
+  | printf '%s\n' "$HOSTNAME" > "$GITDIR/.rsync"
+  | for dir in "$GITDIR/"*; do
+  |     [ -d "$dir" ] || continue
+  |     [ -f "$dir/.rsync" ] ||
+  |     printf '%s/%s\n' "$HOSTNAME" "${dir##*/}" > "$dir/.rsync"
+  |     printf '..\n' > "$dir/.rsync_root"
+  | done
+  `----
+
+  You can then create an *rsync* user for serving the repositories.
+
+  ,----
+  | $ adduser -SD rsync
+  `----
+
+  Create `/etc/rsyncd.conf' and a service configuration as well.
+
+  ,----
+  | uid = rsync
+  | gid = rsync
+  | address = example.com
+  | max connections = 10
+  | use chroot = yes
+  | 
+  | [repo]
+  |     path = /pub/share/repo
+  |     comment = My repository
+  `----
+
+  Create a service file at `/etc/sv/rsync/run' (runit):
+
+  ,----
+  | #!/bin/sh -e
+  | exec rsync --daemon --no-detach
+  `----
+
+
+8 CPT Library
+=============
+
+  `cpt-lib' is the library of Carbs Packaging Tools which can be used to
+  extend the functionality of the package manager. This is the API
+  documentation of the package manager library.
+
+
+8.1 Calling the library
+~~~~~~~~~~~~~~~~~~~~~~~
+
+  You can call the library on your scripts by adding the following line
+  to your files:
+
+  ,----
+  | #!/bin/sh -e
+  | . cpt-lib
+  `----
+
+  This will load the library inside your script, and will set some
+  environment variables that are used inside the package manager.
+
+
+8.2 Option parsing
+~~~~~~~~~~~~~~~~~~
+
+  `cpt-lib' includes a POSIX-shell option parser inside named
+  `getoptions'. You can see its own [documentation] for writing an
+  option parser. The built-in version of the `getoptions' library is
+  2.0.1 and there are no plans for updating it apart from bug fixes.
+
+
+[documentation]
+<https://github.com/ko1nksm/getoptions/blob/v2.0.1/README.md>
+
+8.2.1 Defining a parser
+-----------------------
+
+  Some functions are called and set automatically when you call
+  `cpt-lib', so you shouldn't define the option parser after calling the
+  library, as some of the variables will already be set.
+
+  If the function `parser_definition()' as defined when `cpt-lib' is
+  called, cpt-lib will handle the option parsing itself by calling
+  `getoptions' inside. Here is the proper way of doing it.
+
+  ,----
+  | #!/bin/sh -e
+  | 
+  | parser_definition() {
+  |     # The rest arguments MUST be defined as 'REST'
+  |     setup REST help:usage -- "usage: ${0##*/} [options] [pkg...]"
+  |     msg                   -- '' 'Options:'
+  |     flag CPT_TEST -t export:1 init:@export -- "Enable tests"
+  | 
+  |     global_options
+  | }
+  | 
+  | . cpt-lib
+  `----
+
+
+8.2.2 `global_options()'
+------------------------
+
+  The `global_options()' function is a simple convenience call to
+  include flags that can be used inside most `cpt' tools. It defines the
+  following flags:
+
+   Flag  Long Option  Calls        
+  ---------------------------------
+   -f    --force      `CPT_FORCE'  
+   -y    --no-prompt  `CPT_PROMPT' 
+         --root       `CPT_ROOT'   
+   -h    --help       `usage()'    
+   -v    --version    `version()'  
+
+
+8.3 Message functions
+~~~~~~~~~~~~~~~~~~~~~
+
+  `cpt' has various functions to print information to users.
+
+
+8.3.1 `out()'
+-------------
+
+  `out()' is a really simple function that prints messages to the
+  standard output. It prints every argument with a newline. It is not
+  meant to communicate with the user, it just exists to have a simple
+  function to interact with other functions.
+
+  ,----
+  | $ out "This is an example call" "How are you?"
+  | This is an example call
+  | How are you?
+  `----
+
+
+8.3.2 `log()'
+-------------
+
+  `log()' is the most commonly used message function in the package
+  manager. It is used to pretty print messages with visual cues, so it
+  is easier to read and understand for the users. It changes message
+  output for each argument it receives (takes up to three arguments).
+
+  - If it takes a single argument, it prints a yellow leading arrow
+    followed by colorless text.
+  - If it takes two arguments, it prints a yellow leading arrow followed
+    by the first argument (colored blue), and then followed by colorless
+    second argument.
+  - If it takes three arguments, instead of a yellow arrow, it prints
+    the third argument in yellow, followed by the same two arguments as
+    above.
+
+
+8.3.3 `die()'
+-------------
+
+  `die()' wraps the `log()' function and exits with an error (1). It
+  takes one or two arguments, which are sent to the `log()'
+  function. The third argument for `log()' is set as `!>'.
+
+
+8.3.4 `warn()'
+--------------
+
+  `warn()' is another function that wraps `log()'. In place of the third
+  argument, it uses the word `WARNING'.
+
+
+8.3.5 `prompt()'
+----------------
+
+  `prompt()' is an interactive function that waits for user input to
+  continue.  It takes a single argument string to print a message, and
+  then asks the user whether they want to continue or not. Prompts can
+  be disabled by the user if they use a flag to disable them or set
+  `CPT_PROMPT' to 0.
+
+
+8.4 Text functions
+~~~~~~~~~~~~~~~~~~
+
+  Following functions are used to manipulate, check, or interact with
+  text.
+
+
+8.4.1 `contains()'
+------------------
+
+  `contains' function can be used to check whether a list variable
+  contains a given string. If the string is inside the list, it will
+  return 0, otherwise 1.
+
+  ,----
+  | # Usage
+  | contains "$LIST" foo
+  | 
+  | contains "foo bar" foo  # Returns 0
+  | contains "foo bar" baz  # Returns 1
+  `----
+
+
+8.4.2 `regesc()'
+----------------
+
+  `regesc()' can be used to escape regular expression characters that
+  are defined in POSIX BRE. Those characters are, `$', `.', `*', `[',
+  `\\', and `^'.
+
+  ,----
+  | regesc '^[$\'  # Returns \^\[\$\\
+  `----
+
+
+8.4.3 `pop()'
+-------------
+
+  `pop()' can be used to remove a word from a "string list" without a
+  `sed' call. Word splitting is intentional when using this function.
+
+  ,----
+  | # Usage
+  | pop foo from $LIST
+  | 
+  | pop foo from foo baz bar # Returns baz bar
+  `----
+
+
+8.4.4 `sepchar()'
+-----------------
+
+  This function can be used to separate characters from the given string
+  without resorting to external resources.
+
+  ,----
+  | sepchar mystring
+  | # Prints:
+  | # m
+  | # y
+  | # s
+  | # t
+  | # r
+  | # i
+  | # n
+  | # g
+  `----
+
+
+8.5 Portability functions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  These helper functions are used so that we don't depend on non-POSIX
+  programs for certain functionality. They are prefixed with the `_'
+  character.
+
+
+8.5.1 `_seq()'
+--------------
+
+  This function is similar to `seq(1)' except that it only takes a
+  single argument and doesn't print any newlines. It is suitable to be
+  used in `for' loops.
+
+  ,----
+  | _seq 5
+  | # Prints:
+  | # 1 2 3 4 5
+  `----
+
+
+8.5.2 `_stat()'
+---------------
+
+  This function imitates `stat %U'. `stat' isn't defined by POSIX, and
+  this is also a GNU extension. This function returns the owner of a
+  file. If the owner cannot be found, it will return `root'.
+
+
+8.5.3 `_readlinkf()'
+--------------------
+
+  This function was taken from [POSIX sh readlinkf library by Koichi
+  Nakashima].  `readlink' is also not defined by POSIX, so this function
+  uses `ls' to follow symbolic links until it reaches the actual file.
+
+
+[POSIX sh readlinkf library by Koichi Nakashima]
+<https://github.com/ko1nksm/readlinkf>
+
+
+8.6 TODO System Functions
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  - [ ] Add description
+
+
+8.6.1 `as_root()'
+-----------------
+
+  `as_root()' calls the rest of the arguments as a different
+  user. Unless a `user' environment variable is set, it will call the
+  following arguments as the root user. It supports the following
+  programs for privilege escalation with the following order:
+
+  1. `sls'
+  2. `sudo'
+  3. `doas'
+  4. `su'
+
+
+8.7 TODO Package Functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Obviously, package functions are the most important ones for
+  `cpt-lib', those are the ones you will use to build, to query, to
+  manipulate, or to otherwise interact with packages.
+
+
+8.7.1 `pkg_owner()'
+-------------------
+
+  This function can be used to determine the owner of a package. The
+  first argument is used for flags that will be passed to `grep', and
+  the second one is for the file query. Rest of the arguments can be
+  used in order to specify the manifests to be used, but it is
+  optional. `pkg_owner()' will search for all the installed packages if
+  no other arguments are given.
+
+  ,----
+  | # Example
+  | pkg_owner -lFx /usr/bin/grep  # Returns 'busybox'
+  | 
+  | # An example call made by `pkg_fix_deps()` to figure out whether the built
+  | # package contains the file it depends.
+  | pkg_owner -l "/${dep#/}\$" "$PWD/manifest" >/dev/null && continue
+  | pkg_owner -l "/${dep#/}\$" "$@" ||:
+  `----
+
+
+8.7.2 `pkg_isbuilt()'
+---------------------
+
+  This function returns with success when the given package has a built
+  tarball with the matching version and release strings from the
+  repository.
+
+
+8.7.3 `pkg_lint()'
+------------------
+
+  This function checks whether a given package fits the proper package
+  specification. This function *does not return with failure, it exits
+  outright* if it fails.
+
+
+8.7.4 TODO `pkg_find()'
+-----------------------
+
+  `pkg_find()' is the tool for searching packages. It accepts up to 3
+  arguments.
+
+  $1: Query
+        This is the only mandatory argument. It accepts globbing,
+        meaning that shell wildcards can be used in the query.
+  $2: Match
+        If this exists `pkg_find()' will print every single match found
+        in the search path. If it doesn't, `pkg_find()' will print the
+        first match and exit.
+  $3: Type
+        This is the argument to be passed to the `test' function. Unless
+        this argument is given, it defaults to `-d', which tests for
+        directories.
+
+  ,----
+  | pkg_find cpt
+  `----
+
+
+8.7.5 TODO `pkg_gentree'
+------------------------
+
+  Keep in mind /etc/cpt-base
