@@ -10,7 +10,7 @@ Describe 'Main toolchain'
     Describe 'cpt'
 
         Describe '--version'
-            VERSION=$(grep VERSION config.mk | sed 's/.* //g')
+            VERSION=$(sed -n '/VERSION/s/.* //gp' config.mk)
             It 'outputs cpt version'
                 When run script src/cpt --version
                 The stderr should eq "-> Carbs Packaging Tools $VERSION"
