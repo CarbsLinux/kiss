@@ -10,7 +10,7 @@ Describe 'CPT Library'
         End
     End
     Describe 'version()'
-        VERSION=$(grep VERSION ./config.rc | sed 's/.* //g')
+        VERSION=$(sed -n '/VERSION/s/.* //gp' config.mk)
         It 'prints version information'
             When run script src/cpt-lib version
             The stderr should eq "-> Carbs Packaging Tools $VERSION"
