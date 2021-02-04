@@ -4,6 +4,7 @@
 parser_definition() {
     setup REST help:usage -- "usage: ${0##*/} [pkg...]"
     msg -- '' 'Options:'
+    flag SEARCH_PATH -d "on:$CPT_PATH"    -- "Do not search the installed package database"
     flag all    -s --single init:=1 on:'' -- "Only show the first instance of a package"
     flag others -o --others               -- "Use the current directory as the package" \
                                              "and show other instances"
