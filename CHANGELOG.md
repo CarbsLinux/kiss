@@ -17,10 +17,15 @@ UNRELEASED
 
 ### Added
 - Added basic installation instructions to an `INSTALL` file.
+- Added code coverage and unit tests using `shellspec`.
 
 ### Changed
 - All `src` scripts now exit with success after being called with `--help`.
 - Minor optimizations on `contrib` scripts.
+- Huge speed improvement on `cpt-export`
+
+### Fixed
+- Fixed `cpt-cat` not using the `CPT_ROOT` value.
 
 ### Removed
 - Removed C binaries `cpt-readlink` and `cpt-stat` and instead replaced them

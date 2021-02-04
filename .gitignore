@@ -25,3 +25,9 @@ cpt-lib
 
 ### Texinfo ###
 *.info
+
+### Shellspec files ###
+/.shellspec-local
+/.shellspec-quick.log
+/report/
+/coverage/
