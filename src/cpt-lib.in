@@ -539,6 +539,9 @@ pkg_find() {
         for path2 in "$path/"$query; do
             test "${type:--d}" "$path2" && set -f -- "$@" "$path2"
         done
+        # Break early if we only want a single match for a slight increase
+        # in speed. We don't need to search for the entire path.
+        [ "$1" ] && [ -z "$match" ] && break
     done
 
     IFS=$old_ifs
