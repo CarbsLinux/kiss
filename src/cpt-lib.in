@@ -1885,7 +1885,7 @@ pkg_gentree() (
             x) make_deps=first-nomake ;;
             r) reverse=1 ;;
             n) nonl=1 ;;
-            *) return 1
+            *) die "pkg_gentree: Unknown key '$op'"
         esac
     done
     pkg_depends "$1" tree "${make_deps:+first}"
