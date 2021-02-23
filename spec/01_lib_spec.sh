@@ -1,4 +1,4 @@
-# shellcheck disable=2091
+# shellcheck disable=2091,2034
 
 Describe 'CPT Library'
     export CPT_COLOR=0
@@ -110,14 +110,14 @@ Describe 'CPT Library'
         End
 
         Describe '_readlinkf()'
-            mklink() { :> testfile; ln -s testfile testfile2 ;}
-            rmlink() { rm -f testfile testfile2 ;}
+            mklink() { :> tests/testfile; ln -s testfile tests/testfile2 ;}
+            rmlink() { rm -f tests/testfile tests/testfile2 ;}
             RPWD=$(cd -P .||:; printf %s "$PWD")
             Before mklink
             After  rmlink
             Parameters
                 "#1" . "$RPWD"
-                "#2" "$PWD/testfile2" "$RPWD/testfile"
+                "#2" "$PWD/tests/testfile2" "$RPWD/tests/testfile"
             End
             It "outputs the real location of the given file ($1)"
                When call _readlinkf "$2"
@@ -126,7 +126,7 @@ Describe 'CPT Library'
         End
 
         Describe 'sh256()'
-            It 'outputs an sha256 digest of the given file'
+            It 'outputs an sha256 digest of the given file using any valid system tool'
                 # This should cover our bases for a long time.
                 When call sh256 .editorconfig
                 The output should eq "da42265df733ca05a08d77405c35aa3dd5b8b7fefcc2da915f508067a49351da  .editorconfig"
@@ -195,6 +195,14 @@ Describe 'CPT Library'
             It "doesn't create build directories if an argument is passed"
                 When call create_cache nobuild
                 The variable mak_dir should be undefined
+            End
+        End
+        Describe 'pkg_get_base()'
+        CPT_ROOT=$PWD/tests
+        CPT_PATH=$PWD/tests/repository
+            It 'returns packages defined in base'
+                When call pkg_get_base nonl
+                The output should eq "dummy-pkg contrib-dummy-pkg "
             End
         End
     End
