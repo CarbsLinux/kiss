@@ -1860,7 +1860,11 @@ pkg_get_base() (
 
     # cpt-base is an optional file, return with success if it doesn't exist.
     [ -f "$CPT_ROOT/etc/cpt-base" ] || return 0
-    nonl=$1; set --
+
+    # If there is an argument, change the format to use spaces instead of
+    # newlines.
+    format='%s\n'
+    [ "$#" -eq 0 ] || format='%s '; set --
 
     # Older versions of shellcheck warns us that the variable is changing on the
     # subshell. That is our purpose here, thank you very much.
@@ -1873,7 +1877,10 @@ pkg_get_base() (
             contains "$*" "$dep" || set -- "$@" "$dep"
         done
     done < "$CPT_ROOT/etc/cpt-base"
-    if [ "$nonl" ]; then printf '%s ' "$@"; else printf '%s\n' "$@"; fi
+
+    # Format variable is intentional.
+    # shellcheck disable=2059
+    printf "$format" "$@"
 )
 
 pkg_gentree() (
@@ -1882,14 +1889,14 @@ pkg_gentree() (
     # given package. A second argument can be given as a combination of
     # characters (similar to 'tar(1)' keys) which will be used as an option
     # parser. See the documentation for more information on the keys.
-    deps='' reverse='' nonl='' make_deps=first
+    deps='' reverse='' format='%s\n' make_deps=first
     for op in $(sepchar "$2"); do
         case "$op" in
             b) deps="$(pkg_get_base nonl)" ;;
             f) make_deps='' ;;
             x) make_deps=first-nomake ;;
             r) reverse=1 ;;
-            n) nonl=1 ;;
+            n) format='%s ' ;;
             *) die "pkg_gentree: Unknown key '$op'"
         esac
     done
@@ -1897,7 +1904,11 @@ pkg_gentree() (
     eval set -- "$deps"
     pkg_order "$@"
     if [ "$reverse" ]; then eval set -- "$redro"; else eval set -- "$order"; fi
-    if [ "$nonl" ];    then printf '%s ' "$@"; else printf '%s\n' "$@"; fi
+    [ "$1" ] || return 0
+
+    # Format variable is intentional.
+    # shellcheck disable=2059
+    printf "$format" "$@"
 )
 
 pkg_clean() {
