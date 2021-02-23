@@ -1911,6 +1911,20 @@ pkg_gentree() (
     printf "$format" "$@"
 )
 
+pkg_query_meta() {
+    # Query the 'meta' file of the given meta package. If there is no meta file,
+    # or the key being queried is unavailable, the function will return with
+    # error.
+    repo_dir=$(pkg_find "$1")
+    [ -f "$repo_dir/meta" ] || return
+    while IFS=': ' read -r key val; do
+        case $key in
+            "$2") printf '%s\n' "$val"; return 0
+        esac
+    done < "$repo_dir/meta"
+    return 1
+}
+
 pkg_clean() {
     # Clean up on exit or error. This removes everything related
     # to the build.
