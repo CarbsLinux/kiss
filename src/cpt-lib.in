@@ -1868,12 +1868,10 @@ pkg_get_base() (
     while read -r pkgname _; do
         [ "${pkgname##\#*}" ] || continue
         set -- "$@" "$pkgname"
-        while read -r dep; do
-            contains "$*" "$dep" && continue
-            set -- "$@" "$dep"
-        done <<EOF
-$(pkg_gentree "$pkgname" x)
-EOF
+        deps=$(pkg_gentree "$pkgname" xn)
+        for dep in $deps; do
+            contains "$*" "$dep" || set -- "$@" "$dep"
+        done
     done < "$CPT_ROOT/etc/cpt-base"
     if [ "$nonl" ]; then printf '%s ' "$@"; else printf '%s\n' "$@"; fi
 )
