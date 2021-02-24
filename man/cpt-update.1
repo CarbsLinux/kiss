@@ -1,22 +1,40 @@
-.TH "cpt-update" "1" "2020-07-24" "CARBS LINUX" "General Commands Manual"
-.SH NAME
-cpt-update
-.SH SYNOPSIS
-\fBcpt-update\fR [options]
-
-.SH OPTIONS
-.TP
-\fB--download\fR       Only download the updates
-.TP
-\fB--no-fetch\fR       Do not refresh the repositories
-.TP
-\fB--root\fR [rootdir] Use an alternate root directory
-.PP
-
-.SH DESCRIPTION
-cpt-update checks for package updates.
-
-.SH LICENSE
+.Dd Feb 25, 2021
+.Dt cpt-update 1
+.Sh NAME
+.Nm cpt-update
+.Nd update installed packages
+.Sh SYNOPSIS
+.Nm
+.Op Fl dfnoy
+.Op Fl -root Ar CPT_ROOT
+.Sh DESCRIPTION
+.Nm
+can be used to fetch package repositories, update packages, and download the
+sources for updatable packages.
+.Pp
+The options are as follows:
+.Bl -tag -width 16n
+.It Fl d , -download
+Only download updatable packages
+.It Fl n , -no-fetch
+Do not fetch the repositories
+.It Fl o , -only-fetch
+Only fetch repositories and exit
+.It Fl f , -force
+Force operation
+.It Fl y , -no-prompt
+Do not prompt for confirmation
+.It Fl -root Ar CPT_ROOT
+Use an alternate root directory
+.It Fl h , -help
+Show help message
+.It Fl v , -version
+Print version information
+.El
+.Sh AUTHOR
+.An Cem Keylan Aq Mt cem@ckyln.com
+.Sh LICENSE
 See LICENSE for copyright information.
-.SH SEE ALSO
-cpt(1)
+.Sh SEE ALSO
+.Xr cpt 1
+.Xr cpt-install 1

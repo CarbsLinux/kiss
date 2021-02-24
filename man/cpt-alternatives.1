@@ -1,44 +1,59 @@
-.TH "cpt-alternatives" "1" "2020-07-24" "CARBS LINUX" "General Commands Manual"
-.SH NAME
-cpt-alternatives
-.SH DESCRIPTION
-List and swap to alternatives
-.PP
-.SH SYNOPSIS
-\fBcpt-alternatives\fR [-] [pkg file]
-
-.SH USAGE
-cpt-alternatives can be used to list alternatives (when run without arguments).
-It can read from standard input if ('-' is given as an argument). If you want to
-otherwise
-
-.SH EXAMPLES
-.nf
-+-----------------------------------------------------------------------+
-| List alternatives                                                     |
-+-----------------------------------------------------------------------+
-|                                                                       |
-| $ cpt-alternatives                                                    |
-| ncurses /usr/bin/clear                                                |
-| ncurses /usr/bin/reset                                                |
-|                                                                       |
-+-----------------------------------------------------------------------+
-| Swap to 'clear' from ncurses.                                         |
-+-----------------------------------------------------------------------+
-|                                                                       |
-| $ cpt-alternatives ncurses /usr/bin/clear                             |
-| -> Swapping '/usr/bin/clear' from 'busybox' to 'ncurses'              |
-|                                                                       |
-+-----------------------------------------------------------------------+
-| Swap in bulk (all of sbase).                                          |
-+-----------------------------------------------------------------------+
-|                                                                       |
-| $ cpt-alternatives | grep ^sbase | cpt-alternatives -                 |
-|                                                                       |
-+-----------------------------------------------------------------------+
-.fi
-
-.SH LICENSE
+.Dd Feb 25, 2021
+.Dt cpt-alternatives 1
+.Sh NAME
+.Nm cpt-alternatives
+.Nd List and swap to alternatives
+.Sh SYNOPSIS
+.Nm cpt-alternatives
+.Op Ar -
+.Op Ar package file
+.Sh USAGE
+.Nm
+can be used to either list or swap to alternatives, depending on the given
+arguments:
+.Bl -tag -offset indent -width 12n
+.It Sy -
+Swap to alternatives given on the standard input.
+.It Sy none
+List alternatives.
+.It Sy pkg file
+Swap to the alternative
+.Sy file
+from
+.Sy pkg
+.El
+.Sh EXAMPLES
+.Pp
+Here are some sample commands to make it easier to understand how
+.Nm
+works.
+.Ss LISTING ALTERNATIVES
+.Pp
+Calling
+.Nm
+without any arguments will print all available alternatives on your system.
+.Bd -literal -offset indent
+$ cpt-alternatives
+ncurses /usr/bin/clear
+ncurses /usr/bin/reset
+.Ed
+.Ss SWITCHING ALTERNATIVES
+You can simply switch between alternatives by giving the name of the package and
+the file as arguments.
+.Bd -literal -offset indent
+$ cpt-alternatives ncurses /usr/bin/clear
+-> Swapping '/usr/bin/clear' from 'busybox' to 'ncurses'
+.Ed
+.Ss SWITCHING ALTERNATIVES IN BULK
+There may be times where you want to change multiple alternatives at once. Here
+is an example for using all alternatives from the package
+.Sy sbase .
+.Bd -literal -offset indent
+$ cpt-alternatives | grep ^sbase | cpt-alternatives -
+.Ed
+.Sh AUTHOR
+.An Cem Keylan Aq Mt cem@ckyln.com
+.Sh LICENSE
 See LICENSE for copyright information.
-.SH SEE ALSO
-cpt(1)
+.Sh SEE ALSO
+.Xr cpt 1

@@ -1,13 +1,18 @@
-.TH "cpt-checksum" "1" "2020-07-24" "CARBS LINUX" "General Commands Manual"
-.SH NAME
-cpt-download
-.SH SYNOPSIS
-\fBcpt-download\fR [pkg...]
-
-.SH DESCRIPTION
-cpt-download downloads the sources of the given packages
-
-.SH LICENSE
+.Dd Feb 25, 2021
+.Dt cpt-download 1
+.Sh NAME
+.Nm cpt-download
+.Nd download sources for given packages
+.Sh SYNOPSIS
+.Nm
+.Op Ar pkg...
+.Sh DESCRIPTION
+cpt-download downloads the sources of the given packages. If no arguments are
+specified, it will assume that the current directory is the package.
+.Sh AUTHOR
+.An Cem Keylan Aq Mt cem@ckyln.com
+.Sh LICENSE
 See LICENSE for copyright information.
-.SH SEE ALSO
-cpt(1)
+.Sh SEE ALSO
+.Xr cpt 1
+.Xr cpt-checksum 1

@@ -1,20 +1,39 @@
-.TH "cpt-install" "1" "2020-07-24" "CARBS LINUX" "General Commands Manual"
-.SH NAME
-cpt-install
-.SH SYNOPSIS
-\fBcpt-install\fR [options] [pkg...]
-
-.SH OPTIONS
-.TP
-\fB--force\fR           Force installation
-.TP
-\fB--root\fR [rootdir]  Use an alternate root directory
-.PP
-
-.SH DESCRIPTION
-cpt-install installs the given packages.
-
-.SH LICENSE
+.Dd Feb 25, 2021
+.Dt cpt-install 1
+.Sh NAME
+.Nm cpt-install
+.Nd install given packages
+.Sh SYNOPSIS
+.Nm
+.Op Fl fy
+.Op Fl -root Ar CPT_ROOT
+.Op Ar package...
+.Sh DESCRIPTION
+.Nm
+installs given packages. It will assume that the current directory is a package
+if no arguments are given. Before
+.Nm
+can install a package it must be built by using the
+.Xr cpt-build 1
+tool.
+.Pp
+The options are as follows:
+.Bl -tag -width 15n
+.It Fl f , -force
+Force installation
+.It Fl y , -no-prompt
+Do not prompt for confirmation
+.It Fl -root Ar CPT_ROOT
+Use an alternate root directory
+.It Fl h , -help
+Show help message
+.It Fl v , -version
+Print version information
+.El
+.Sh AUTHOR
+.An Cem Keylan Aq Mt cem@ckyln.com
+.Sh LICENSE
 See LICENSE for copyright information.
-.SH SEE ALSO
-cpt(1)
+.Sh SEE ALSO
+.Xr cpt 1
+.Xr cpt-build 1

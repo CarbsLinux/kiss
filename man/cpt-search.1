@@ -1,15 +1,33 @@
-.TH "cpt-search" "1" "2020-07-24" "CARBS LINUX" "General Commands Manual"
-.SH NAME
-cpt-search
-.SH SYNOPSIS
-\fBcpt-search\fR [--single] [pkg...]
-
-.SH DESCRIPTION
-cpt-search can be used to search packages. Glob characters can be used in the
-search. If the \fI--single\fR option is specified cpt-search will only output
-the first match.
-
-.SH LICENSE
+.Dd Feb 25, 2021
+.Dt cpt-search 1
+.Sh NAME
+.Nm cpt-search
+.Nd search for cpt packages
+.Sh SYNOPSIS
+.Nm
+.Op Fl dso
+.Op Ar query
+.Sh DESCRIPTION
+.Nm
+can be used to search packages. Glob characters can also be used in the search.
+.Pp
+The options are as follows:
+.Bl -tag -width 14n
+.It Fl d
+Do not search the installed package database.
+.It Fl s , -single
+Only show the first instance of a package.
+.It Fl o , -others
+Use the current directory as the package and show other instances of that
+package.
+.It Fl h , -help
+Show help message
+.It Fl v , -version
+Print version information
+.El
+.Sh AUTHOR
+.An Cem Keylan Aq Mt cem@ckyln.com
+.Sh LICENSE
 See LICENSE for copyright information.
-.SH SEE ALSO
-cpt(1)
+.Sh SEE ALSO
+.Xr cpt 1

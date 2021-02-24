@@ -1,13 +1,44 @@
-.TH "cpt-list" "1" "2020-07-24" "CARBS LINUX" "General Commands Manual"
-.SH NAME
-cpt-list
-.SH SYNOPSIS
-\fBcpt-list\fR [pkg...]
-.SH DESCRIPTION
-cpt-list can be used to list all packages or check if the given package is
-installed on the system.
-
-.SH LICENSE
+.Dd Feb 25, 2021
+.Dt cpt-list 1
+.Sh NAME
+.Nm cpt-list
+.Nd list packages
+.Sh SYNOPSIS
+.Nm
+.Op Fl c
+.Op Fl -check Ar args...
+.Op Ar pkg...
+.Sh DESCRIPTION
+.Nm
+can be used to list all packages or check if the given package is
+installed on the system. Without any arguments supplied,
+.Nm
+will list all packages installed on the system. Otherwise, it will check and
+list the given packages. If any of the given packages are not installed on the
+system,
+.Nm
+will exit with an error. However,
+.Fl c
+and
+.Fl -check
+flags can be used in order to change the behaviour of the utility:
+.Bl -tag -width 12n
+.It Fl c , -current
+Assumes that the current directory is a package and will use it instead of
+arguments.
+.It Fl -check Ar package true_statement false_statement
+Checks whether the
+.Em package
+is installed on the system and returns the string for
+.Em true_statement
+if it is installed and the string for
+.Em false_statement
+if it isn't. This function is mostly useful for being called inside packages for
+optional dependencies.
+.El
+.Sh AUTHOR
+.An Cem Keylan Aq Mt cem@ckyln.com
+.Sh LICENSE
 See LICENSE for copyright information.
-.SH SEE ALSO
-cpt(1)
+.Sh SEE ALSO
+.Xr cpt 1

@@ -1,179 +1,31 @@
-.TH "CPT" "1" "2020-04-19" "CARBS LINUX" "General Commands Manual"
-.SH NAME
-cpt
-.SH DESCRIPTION
-Package management toolchain for Carbs Linux.
-.PP
-.SH SYNOPSIS
-cpt [extension]
-.TP
-cpt will run the appropriate cpt-* command based on the arguments.
-
-.
-.fi
-.
-.SH CUSTOMIZATION
-.
-The package manager is controlled through environment variables.
-
-These can be set in your \fI~/.profile\fR or \fI/etc/profile.d\fR
-to have the options apply all the time.
-
-These can also be set in the current shell to have them apply
-only for the current session.
-
-\fBNOTE:\fR The values shown below are the defaults.
-
-.SS MANAGING REPOSITORIES
-.
-This works exactly like \fI$PATH\fR (Colon seperated).
-
-A list of repositories the package manager will use. You can
-add your own repositories or remove the default ones.
-.IP
-.nf
-export CPT_PATH=/var/db/cpt/repo/core:/var/db/cpt/repo/extra:/var/db/cpt/repo/xorg
-.fi
-.PP
-.SS FORCE PACKAGE INSTALLATION OR REMOVAL
-This can be used to bypass the dependency checks on installation
-and removal of packages.
-
-Set it to \fB'1'\fR to force.
-
-.IP
-.nf
-export CPT_FORCE=0
-.fi
-.PP
-.SS HOOK INTO CPT THROUGH A SCRIPT
-This can be used set custom CFLAGS per package, modify builds,
-etc. This environment variable must point to a shellscript.
-
-The script will have the following environment variables set.
-
-.TP
-.B $PKG:
-Name of the current package.
-.TP
-.B $TYPE:
-The type of hook (pre-build, post-build, build-fail, pre-install, post-install).
-.TP
-.B $DEST:
-The full path to where 'make install' will put the package.
-
-.PP
-.B SIMPLE EXAMPLE SCRIPT
-.nf
-
-case $TYPE in
-    pre-build)
-        case $PKG in
-           zlib) export CFLAGS="-Os -static" ;;
-           curl) export CFLAGS="-O3" ;;
-        esac
-    ;;
-
-    post-build)
-        : "${DEST:?DEST is unset}"
-
-        rm -rf "$DEST/usr/share/doc"
-        rm -rf "$DEST/usr/share/gettext"
-    ;;
-esac
-.fi
-
-export CPT_HOOK=/path/to/script
-.SS ROOT DIRECTORY
-
-Where installed packages will go. You won't ever need
-to touch this during normal usage.
-
-This can be used to have the package manager run in a "fake root".
-.IP
-export CPT_ROOT=/
-.PP
-
-.SS KEEPING LOGS
-Keep build logs around for successful builds and not just failing ones.
-Helpful when debugging.
-
-Set it to \fB'1'\fR to enable.
-.IP
-export CPT_KEEPLOG=0
-.PP
-.SS KEEPING BUILD FILES
-You can keep build, package and extraction cache directories for debugging
-purposes.
-
-Set it to \fB'1'\fR to enable.
-.IP
-export CPT_DEBUG=0
-.PP
-.SS CHANGING COMPRESSION METHOD
-\fBCPT\fR by default uses gzip for packaging, but it can be changed. Valid
-options are \fIbz2\fR, \fIgz\fR (default), \fIxz\fR, \fIzst\fR. If an unknown
-compression method is specified, it fallbacks to \fIgz\fR.
-.IP
-export CPT_COMPRESS=gz
-.PP
-.SS SUDO UTILITIES
-You can force the usage of a different \fB'sudo'\fR tool. Available options are
-\fIsu\fR, \fIsudo\fR, \fIdoas\fR.
-.IP
-export CPT_SU=
-.PP
-.SS USE A REPRODUCIBLE CACHE NAMING SCHEME
-
-The package manager builds packages inside \fIbuild-$PID/\fR with \fI$PID\fR
-being the package manager's process ID. This allows for multiple
-builds to happen at once.
-
-You can override this and \fIknow\fR the location beforehand with the
-below environment variable. \fICPT_PID=test\fR will build the package
-in \fIbuild-test\fR.
-
-Unset by default.
-.IP
-export CPT_PID=
-.PP
-.SS SPECIFYING BUILD DIRECTORY
-
-All build related files, by default, are stored in the cache directory. If the
-user specifies \fICPT_TMPDIR\fR, it will be used instead of the cache directory
-for building packages. This can be useful if you want to build a package on ram
-or a different filesystem.
-
-Unset by default.
-.IP
-export CPT_TMPDIR=
-.PP
-.SS ENABLING/DISABLING COLOUR
-
-If run in a subshell, \fBCPT\fR disables colour output. However, this behaviour
-can be overriden. If a user defines a \fICPT_COLOR\fR environment value, it will
-be enabled or disabled globally
-.IP
-export CPT_COLOR=1 # Enables globally
-.IP
-export CPT_COLOR=0 # Disables globally
-.PP
-.SS DISABLING PROMPTS
-User can disable prompts by setting a \fICPT_NOPROMPT\fR environment value. This
-can be useful for scripting purposes.
-
-.IP
-CPT_NOPROMPT=1 cpt-build pkg1 pkg2
-.PP
-
-.SH AUTHORS
-Cem Keylan, Fork Maintainer, Carbs Linux
-.br
-<cem@ckyln.com>
-.PP
-Dylan Araps, Original Author of the kiss package manager, KISS Linux
-
-.SH LICENSE
+.Dd Feb 25, 2021
+.Dt cpt 1
+.Sh NAME
+.Nm cpt
+.Nd carbs packaging toolchain
+.Sh SYNOPSIS
+.Nm
+.Op Ar extension arg...
+.Sh DESCRIPTION
+.Nm
+is the packaging toolchain written for Carbs Linux. The base command
+.Nm
+will find and run the appropriate
+.Em cpt-*
+command based on the arguments.
+.Pp
+Each base tool have their own manual page and concise documentation can be found
+on GNU info pages, either using the
+.Xr info 1
+program or through the web from
+.Lk https://carbslinux.org/docs.html .
+It can also be read plaintext by running
+.Pp
+.Dl less Pa /usr/share/doc/cpt.txt
+.Sh AUTHOR
+.An Cem Keylan Aq Mt cem@ckyln.com
+.Sh LICENSE
 See LICENSE for copyright information
-.SH SEE ALSO
-cpt-contrib(1) cpt-alternatives(1) cpt-install(1) rsync(1)
+.Sh SEE ALSO
+.Xr cpt-build 1
+.Xr cpt-install 1
