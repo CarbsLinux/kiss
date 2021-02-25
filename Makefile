@@ -25,7 +25,7 @@ dist: docs/cpt.info
 	xz -z "cpt-${VERSION}.tar"
 	rm -rf -- "cpt-${VERSION}"
 
-install:
+install: all
 	test "${DOCS}" != yes || ${MAKE} -C docs install
 	${INSTALL_SH} -Dm755 -t ${DESTDIR}${BINDIR} ${BIN}
 	${INSTALL_SH} -Dm644 -t ${DESTDIR}${MAN1} man/*.1
