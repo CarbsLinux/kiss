@@ -462,6 +462,7 @@ decompress() {
     case $1 in
         *.tar)      cat       ;;
         *.bz2)      bzip2 -cd ;;
+        *.lz)       lzip  -cd ;;
         *.xz|*.txz) xz -dcT 0 ;;
         *.tgz|*.gz) gzip -cd  ;;
         *.zst)      zstd -cd  ;;
@@ -998,6 +999,7 @@ pkg_tar() {
             xz)  xz -zT 0 ;;
             gz)  gzip -6  ;;
             zst) zstd -3  ;;
+            lz)  lzip -6  ;;
             *)   gzip -6  ;;  # Fallback to gzip
         esac \
     > "$bin_dir/$1#$version-$release.tar.$CPT_COMPRESS"
