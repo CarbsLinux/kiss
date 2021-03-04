@@ -1,3 +1,0 @@
-# -*- mode: sh -*-
-# This a test hook file that only returns back the $TYPE, $PKG, and $DEST
-out "$CPT_HOOK $TYPE $PKG $DEST"
